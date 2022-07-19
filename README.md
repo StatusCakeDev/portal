@@ -1,4 +1,4 @@
-# Portal
+# Portal [![test](https://github.com/StatusCakeDev/portal/actions/workflows/test.yaml/badge.svg)](https://github.com/StatusCakeDev/portal/actions/workflows/test.yaml)
 
 StatusCake developer portal built using [Docusaurus 2](https://docusaurus.io/),
 a modern static website generator.
