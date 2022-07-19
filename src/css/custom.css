@@ -62,3 +62,23 @@
 .menu__link.icon {
   display: none;
 }
+
+/**
+ * This is a hack to prevent the API docs from displaying a large gap at the
+ * top of the side panel. This does however instead cause the top of the side
+ * panel to move underneath the navigation bar when the view is scrolled. This
+ * is the best scenario of a bad bunch and should not cause too much issue.
+ *
+ * TODO: create an issue on the redocusaurus GitHub project about this.
+ */
+.redoc-wrap > .menu-content {
+  top: 0 !important;
+  height: 100vh !important;
+}
+
+/**
+ * Awful hack to remove the notice at the bottom of the list.
+ */
+.redoc-wrap > .menu-content > div:last-child > div:last-child {
+  display: none;
+}

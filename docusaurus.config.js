@@ -49,6 +49,34 @@ const config = {
         },
       }),
     ],
+    [
+      'redocusaurus',
+      {
+        // Plugin Options for loading OpenAPI files
+        specs: [
+          {
+            spec: 'src/spec/openapi.yaml',
+            route: '/api/',
+          },
+        ],
+        // Theme Options for modifying how redoc renders them
+        theme: {
+          // Change with your site colors
+          primaryColor: '#1890ff',
+          options: {
+            disableSearch: true,
+            expandResponses: '200',
+            hideFab: true,
+            hideLoading: true,
+            hideSingleRequestSampleTab: true,
+            nativeScrollbars: true,
+          },
+          theme: {
+            // https://github.com/Redocly/redoc#redoc-theme-object
+          },
+        },
+      },
+    ],
   ],
 
   themeConfig:

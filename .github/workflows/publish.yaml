@@ -23,6 +23,17 @@ jobs:
         cache: yarn
     - name: Install dependencies
       run: yarn install --frozen-lockfile
+    - name: Fetch API documentation
+      run: |
+        curl -SsL "https://raw.githubusercontent.com/${ORG}/${REPO}/${BRANCH}/${FILE_PATH}" \
+          -H "Authorization: token ${GITHUB_TOKEN}" \
+          -o src/spec/openapi.yaml \
+      env:
+        ORG: StatusCakeDev
+        REPO: openapi
+        BRANCH: master
+        FILE_PATH: "api/statuscake/service/statuscake/openapi.yaml"
+        GITHUB_TOKEN: ${{ secrets.MACHINE_TOKEN }}
     - name: Build website
       run: yarn build
     - name: Deploy to GitHub Pages

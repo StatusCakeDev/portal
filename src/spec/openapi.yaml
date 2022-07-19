@@ -1,0 +1,8 @@
+---
+swagger: "2.0"
+info:
+  title: "Dummy API"
+  description: |
+    This is a dummy API schema document. To render the schema available in
+    production replace `src/spec/openapi.yaml` with the file found
+    [here](https://github.com/StatusCakeDev/openapi/blob/master/api/statuscake/service/statuscake/openapi.yaml).
