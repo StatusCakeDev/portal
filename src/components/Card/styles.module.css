@@ -1,0 +1,9 @@
+.card {
+  align-items: flex-start;
+  background-color: var(--ifm-code-background);
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  justify-content: space-between;
+  padding: 1rem;
+}
