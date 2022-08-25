@@ -1,0 +1,45 @@
+.prompt {
+  border-radius: var(--ifm-pre-border-radius);
+  box-shadow: var(--ifm-global-shadow-lw);
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.language {
+  --ifm-code-font-size: 95%;
+  margin: 0;
+}
+
+.language:before {
+  content: '$ ';
+  vertical-align: middle;
+}
+
+.language:hover + .buttonGroup button {
+  opacity: .3;
+}
+
+.buttonGroup {
+  -webkit-column-gap: 0.2rem;
+  column-gap: 0.2rem;
+  display: flex;
+  position: absolute;
+  right: calc(var(--ifm-pre-padding)/2);
+  top: calc(0.2rem + var(--ifm-pre-padding)/2);
+}
+
+.buttonGroup button {
+  align-items: center;
+  border-radius: var(--ifm-global-radius);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  display: flex;
+  line-height: 0;
+  opacity: 0;
+  padding: 0.4rem;
+  transition: opacity .2s ease-in-out;
+}
+
+.buttonGroup button:hover {
+  opacity: 1;
+}
