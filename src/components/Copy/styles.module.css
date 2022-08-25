@@ -1,0 +1,47 @@
+.button {
+  background: var(--ifm-pre-background);
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+.icons {
+  height: 1.125rem;
+  position: relative;
+  width: 1.125rem;
+}
+
+.copyButtonIcon, .copyButtonSuccessIcon {
+  fill: currentColor;
+  height: inherit;
+  left: 0;
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  transition: .15s;
+  width: inherit;
+}
+
+.copied .copyButtonIcon {
+  -webkit-transform: scale(.33);
+  opacity: 0;
+  transform: scale(.33);
+}
+
+.copyButtonSuccessIcon {
+  -webkit-transform: translate(-50%, -50%) scale(.33);
+  color: #00d600;
+  left: 50%;
+  opacity: 0;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(.33);
+}
+
+.copied .copyButtonSuccessIcon {
+  -webkit-transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  transition-delay: 75ms;
+}
