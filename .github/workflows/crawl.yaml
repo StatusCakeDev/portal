@@ -1,0 +1,20 @@
+name: crawl
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+    - pages-build-deployment
+    types:
+    - completed
+jobs:
+  crawl:
+    name: Algolia DocSearch Crawler
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: darrenjennings/algolia-docsearch-action@master
+      with:
+        algolia_application_id: "164WA72IY0"
+        algolia_api_key: ${{ secrets.ALGOLIA_INDEX_API_KEY }}
+        file: "algolia.config.json"

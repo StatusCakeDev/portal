@@ -59,6 +59,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      algolia: {
+        appId: '164WA72IY0',
+        apiKey: 'f1d6dae27a5ebf65d6eca2de77ea4d22',
+        indexName: 'statuscake',
+      },
       colorMode: {
         defaultMode: 'light',
         disableSwitch: false,
