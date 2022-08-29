@@ -141,70 +141,37 @@ const config = {
           autoCollapseCategories: true,
         },
       },
-      navbar: {
-        title: 'My Site',
-        logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
-        },
-        items: [
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Tutorial',
-          },
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
-            position: 'right',
-          },
-      },
       footer: {
-        style: 'dark',
+        copyright: `Copyright © ${new Date().getFullYear()} StatusCake. Built with <a target="_blank" rel="noopener noreferer" href="https://docusaurus.io/">Docusaurus</a> and <a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">Redocly</a>.`,
         links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Blog',
-                href: 'https://www.statuscake.com/blog',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
-              },
-            ],
-          },
+          { title: 'Documentation', items: [
+            { label: 'Guides', to: '/guides' },
+          ]},
+          { title: 'Community', items: [
+            { href: 'https://github.com/StatusCakeDev', label: 'GitHub' },
+            { href: 'https://stackoverflow.com/questions/tagged/statuscake', label: 'Stack Overflow' },
+            { href: 'https://www.linkedin.com/company/statuscake/', label: 'LinkedIn' },
+            { href: 'https://twitter.com/statuscaketeam', label: 'Twitter' },
+          ]},
+          { title: 'More', items: [
+            { href: 'https://www.statuscake.com/blog', label: 'Blog' },
+            { href: 'https://www.statuscake.com/join-the-team/', label: 'Careers', position: 'left' },
+          ]},
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      },
+      navbar: {
+        hideOnScroll: false,
+        items: [
+          { to: '/guides', label: 'Guides', position: 'left' },
+          { to: '/api', label: 'References', position: 'left' },
+          { to: 'https://app.statuscake.com', label: 'Dashboard', position: 'right' },
+          { href: 'https://github.com/StatusCakeDev', className: 'icon github', 'aria-label': 'GitHub', position: 'right' },
+        ],
+        logo: {
+          alt: 'StatusCake Developers Portal',
+          src: '/img/logo.svg',
+          srcDark: '/img/logo-dark.svg',
+        },
       },
       prism: {
         theme: lightCodeTheme,
