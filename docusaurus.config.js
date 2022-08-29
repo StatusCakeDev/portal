@@ -26,6 +26,50 @@ const config = {
     locales: ['en'],
   },
 
+  /** @type {import('@site/src/types').CustomFields} */
+  customFields: {
+    hero: {
+      image: {
+        src: '/img/index/logo-dev.svg',
+        srcDark: '/img/index/logo-dev-dark.svg',
+        alt: 'StatusCake Developers Portal',
+      },
+    },
+    clients: [{
+      title: 'Go',
+      prompt: 'go get github.com/StatusCakeDev/statuscake-go',
+      href: 'https://github.com/StatusCakeDev/statuscake-go',
+      image: {
+        src: '/img/languages/go.svg',
+        alt: 'Go',
+      },
+    }, {
+      title: 'JavaScript',
+      prompt: 'npm install -D statuscake-js',
+      href: 'https://github.com/StatusCakeDev/statuscake-js',
+      image: {
+        src: '/img/languages/node.svg',
+        alt: 'JavaScript',
+      },
+    }, {
+      title: 'Python',
+      prompt: 'pip install statuscake-py',
+      href: 'https://github.com/StatusCakeDev/statuscake-py',
+      image: {
+        src: '/img/languages/python.svg',
+        alt: 'Python',
+      },
+    }, {
+      title: 'Ruby',
+      prompt: 'bundle add statuscake-rb',
+      href: 'https://github.com/StatusCakeDev/statuscake-rb',
+      image: {
+        src: '/img/languages/ruby.svg',
+        alt: 'Ruby',
+      },
+    }],
+  },
+
   presets: [
     [
       'classic',

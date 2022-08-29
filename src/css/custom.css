@@ -25,6 +25,7 @@
   --doc-page-vertical-spacing: 2rem;
   --doc-sidebar-menu-vertical-padding: 2rem;
   --doc-sidebar-padding: 1.5rem;
+  --ifm-hero-dark-background-color: #303846;
   --icon-hover-opacity: .6;
 }
 
@@ -40,6 +41,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
   /* Custom */
+  --ifm-hero-dark-background-color: var(--ifm-background-surface-color);
   --icon-hover-opacity: .8;
 }
 
@@ -140,6 +142,41 @@
 
 .menu__link.icon {
   display: none;
+}
+
+.button.button--quick:before {
+  content: '⏱ ';
+}
+
+.button.button--hero {
+  --ifm-button-size-multiplier: 1.3;
+}
+
+.featured {
+  display: flex;
+  flex-direction: row;
+}
+
+.featured-title {
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 997px) {
+  .featured-text, .featured-image {
+    flex: 1;
+  }
+
+  .footer__links {
+    margin-bottom: 2rem;
+  }
+}
+
+/**
+ * Unfortunate hack to colour the dark hero banner differently than the default
+ * theme.
+ */
+.hero--dark {
+  --ifm-hero-background-color: var(--ifm-hero-dark-background-color) !important;
 }
 
 /**
