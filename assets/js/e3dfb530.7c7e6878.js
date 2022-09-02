@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkportal=self.webpackChunkportal||[]).push([[662],{85615:e=>{e.exports=JSON.parse('{"title":"Tools","slug":"/category/tools","permalink":"/guides/category/tools","navigation":{"previous":{"title":"security","permalink":"/guides/references/security"},"next":{"title":"StatusCake command-line","permalink":"/guides/tools/cli"}}}')}}]);

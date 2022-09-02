@@ -1,0 +1,4167 @@
+swagger: '2.0'
+info:
+  title: StatusCake API
+  description: |
+    # Introduction
+
+    The StatusCake API is organised around the features that we offer, with
+    each feature providing a set of endpoints to perform operations on
+    resources associated with your account.
+
+    # Authentication
+
+    The StatusCake API uses API keys to authenticate requests. You can view and
+    manage your API keys from [the StatusCake account
+    panel](https://app.statuscake.com/User.php).
+
+    All API requests must be made over HTTPS. Calls made over plain HTTP will
+    be redirected to the secure endpoint. API requests without authentication
+    will fail unless otherwise stated in the documentation for the specific
+    endpoint.
+
+    <SecurityDefinitions />
+
+    For example an authenticated request must contain an HTTP header of the
+    form `Authorization: Bearer <API KEY>`.
+
+    **NOTE**: API keys must be kept private. In the event that is it exposed a
+    new one should be generated.
+
+    # Ratelimits
+
+    Ratelimits are applied to the API to prevent any one client degrading the
+    overall system stability. StatusCake accounts without a subscription, or
+    those on a free plan, can make a maximum of 10 requests per second. For
+    accounts with a paid subscription this limit is increaed to 20 requests per
+    second.
+
+    Authenticated requests are associated with the authenticated account,
+    regardless of which API key was used. This means that all API clients share
+    the same ratelimit quota per second when they authenticate with different
+    API keys owned by the same StatusCake account.
+
+    When the ratelimit quota is exceeded all future requests will return an
+    HTTP `429` status until the ratelimit window is reset.
+
+    # Cross-Origin Resource Sharing
+
+    The StatusCake API features Cross-Origin Resource Sharing (CORS)
+    implemented in compliance with the W3C specification. This allows
+    cross-domain communication from the browser. All responses have a wildcard
+    same-origin which makes them completely public and accessible to everyone.
+
+    # Errors
+
+    StatusCake uses conventional HTTP response codes to indicate the success or
+    failure of an API request. In general: Codes in the `2xx` range indicate
+    success. Codes in the `4xx` range indicate an error that failed given the
+    information provided (e.g. a required parameter was omitted or malformed).
+    Codes in the `5xx` range indicate an error with StatusCake servers.
+
+    ## Handling Errors
+
+    Our client libraries raise exceptions, or return error types, depending on
+    the control flow supported by the language. We recommend using these to
+    write code that handles all possible API exceptions.
+  version: 1.0.0-beta.3
+  termsOfService: https://www.statuscake.com/terms-and-conditions/
+  contact:
+    name: Support
+    email: support@statuscake.com
+    url: https://www.statuscake.com
+  x-logo:
+    url: >-
+      https://static.statuscake.com/img/logos/horizontal-logo-blackberry-text-small.png
+    altText: StatusCake
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: api.statuscake.com
+basePath: /v1
+consumes:
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+schemes:
+  - https
+securityDefinitions:
+  api_key:
+    type: apiKey
+    in: header
+    name: Authorization
+tags:
+  - name: contact groups
+    description: |
+      The Contact Groups API provides methods to configure how StatusCake alerts
+      are forwarded to the people that need to see them.
+  - name: maintenance windows
+    description: |
+      The Maintenance Windows API provides methods to pause alerts from being
+      sent for scheduled maintenance periods.
+
+      **NOTE**: the API endpoints concerned with maintenance windows will only
+      work with accounts registed to use the newer version of maintenance
+      windows. This version of maintenance windows is incompatible with the
+      original version and all existing windows will require migrating to be
+      further used. Presently a tool to automate the migration of maintenance
+      windows is under development.
+  - name: pagespeed
+    description: >
+      The Pagespeed API provides methods to operate on pagespeed resources,
+
+      effectively allowing checks to be created, read, updated, and deleted.
+
+      In addition the history of a specific pagespeed check can be returned for
+      a
+
+      given period.
+  - name: ssl
+    description: |
+      The SSL API provides methods to operate on SSL resources, effectively
+      allowing checks to be created, read, updated, and deleted.
+  - name: uptime
+    description: >
+      The Uptime API provides methods to operate on uptime resources,
+      effectively
+
+      allowing checks to be created, read, updated, and deleted. In addition the
+
+      Uptime API is able to return a history of uptime status for a given
+      period;
+
+      and return a history of alerts since a given date.
+  - name: locations
+    description: |
+      The Locations API returns details of our testing infrastructure. This may
+      be used to gather information regarding IP addresses that may need to be
+      allowed through firewalls for checks to be succesful.
+x-tagGroups:
+  - name: Features
+    tags:
+      - pagespeed
+      - ssl
+      - uptime
+  - name: Alerting
+    tags:
+      - contact groups
+      - maintenance windows
+  - name: Monitoring Locations
+    tags:
+      - locations
+paths:
+  /contact-groups:
+    get:
+      operationId: list-contact-groups
+      summary: Get all contact groups
+      description: Returns a list of contact groups for an account.
+      tags:
+        - contact groups
+      parameters:
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of contact groups to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ContactGroups'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/contact-groups \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListContactGroups(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    post:
+      operationId: create-contact-group
+      summary: Create a contact group
+      description: Creates a contact group with the given parameters.
+      tags:
+        - contact groups
+      parameters:
+        - name: create_contact_group_request
+          in: body
+          schema:
+            $ref: '#/definitions/ContactGroupCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/contact-groups \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Operations%20Team&email_addresses[]=johnsmith@example.com&email_addresses[]=janesmith@example.com"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreateContactGroup(context.Background()).
+                Name("Operations Team").
+                EmailAddresses([]string{
+                  "johnsmit@example.com",
+                  "janesmit@example.com",
+                }).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
+  /contact-groups/{group_id}:
+    get:
+      operationId: get-contact-group
+      summary: Retrieve a contact group
+      description: Returns a contact group with the given id.
+      tags:
+        - contact groups
+      parameters:
+        - name: group_id
+          description: Contact group ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ContactGroupResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/contact-groups/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetContactGroup(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    put:
+      operationId: update-contact-group
+      summary: Update a contact group
+      description: Updates a contact group with the given parameters.
+      tags:
+        - contact groups
+      parameters:
+        - name: group_id
+          description: Contact group ID
+          in: path
+          type: string
+          required: true
+        - name: update_contact_group_request
+          in: body
+          schema:
+            $ref: '#/definitions/ContactGroupUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X PUT https://api.statuscake.com/v1/contact-groups/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Operations%20Team&email_addresses[]johnsmith@example.com&email_addresses[]=janesmith@example.com"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdateContactGroup(context.Background(), "123").
+                Name("Operations Team").
+                EmailAddresses([]string{
+                  "johnsmit@example.com",
+                  "janesmit@example.com",
+                }).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+    delete:
+      operationId: delete-contact-group
+      summary: Delete a contact group
+      description: Deletes a contact group with the given id.
+      tags:
+        - contact groups
+      parameters:
+        - name: group_id
+          description: Contact group ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X DELETE https://api.statuscake.com/v1/contact-groups/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeleteContactGroup(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+  /maintenance-windows:
+    get:
+      operationId: list-maintenance-windows
+      summary: Get all maintenance windows
+      description: Returns a list of maintenance windows for an account.
+      tags:
+        - maintenance windows
+      parameters:
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of maintenance windows to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: state
+          description: Maintenance window state
+          in: query
+          type: string
+          enum:
+            - active
+            - paused
+            - pending
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MaintenanceWindows'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/maintenance-windows \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListMaintenanceWindows(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    post:
+      operationId: create-maintenance-window
+      summary: Create a maintenance window
+      description: Creates a maintenance window with the given parameters.
+      tags:
+        - maintenance windows
+      parameters:
+        - name: create_maintenance_window_request
+          in: body
+          schema:
+            $ref: '#/definitions/MaintenanceWindowCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/maintenance-windows \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Weekends&start_at=2021-12-06T01:30:00Z&end_at=2021-07-11T06:00:00Z&repeat_interval=1w&tags[]=production&timezone=UTC"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreateMaintenanceWindow(context.Background()).
+                Name("Weekends").
+                End(time.Date(2021, 7, 11, 6, 0, 0, 0, time.UTC)).
+                RepeatInterval(statuscake.MaintenanceWindowRepeatIntervalWeekly).
+                Start(time.Date(2021, 12, 6, 1, 30, 0, 0, time.UTC)).
+                Tags([]string{"production"}).
+                Timezone("UTC").
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
+  /maintenance-windows/{window_id}:
+    get:
+      operationId: get-maintenance-window
+      summary: Retrieve a maintenance window
+      description: Returns a maintenance window with the given id.
+      tags:
+        - maintenance windows
+      parameters:
+        - name: window_id
+          description: Maintenance window ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MaintenanceWindowResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/maintenance-windows/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetMaintenanceWindow(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    put:
+      operationId: update-maintenance-window
+      summary: Update a maintenance window
+      description: Updates a maintenance window with the given parameters.
+      tags:
+        - maintenance windows
+      parameters:
+        - name: window_id
+          description: Maintenance window ID
+          in: path
+          type: string
+          required: true
+        - name: update_maintenance_window_request
+          in: body
+          schema:
+            $ref: '#/definitions/MaintenanceWindowUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/maintenance-windows/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Weekends&start_at=2021-12-06T01:30:00Z&end_at=2021-07-11T06:00:00Z&repeat_interval=1w&tags[]=production&timezone=UTC"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdateMaintenanceWindow(context.Background(), "123").
+                Name("Weekends").
+                End(time.Date(2021, 7, 11, 6, 0, 0, 0, time.UTC)).
+                RepeatInterval(statuscake.MaintenanceWindowRepeatIntervalWeekly).
+                Start(time.Date(2021, 12, 6, 1, 30, 0, 0, time.UTC)).
+                Tags([]string{"production"}).
+                Timezone("UTC").
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+    delete:
+      operationId: delete-maintenance-window
+      summary: Delete a maintenance window
+      description: Deletes a maintenance window with the given id.
+      tags:
+        - maintenance windows
+      parameters:
+        - name: window_id
+          description: Maintenance window ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: >
+            curl -X DELETE https://api.statuscake.com/v1/maintenance-windows/123
+            \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeleteMaintenanceWindow(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+  /pagespeed:
+    get:
+      operationId: list-pagespeed-tests
+      summary: Get all pagespeed checks
+      description: Returns a list of pagespeed checks for an account.
+      tags:
+        - pagespeed
+      parameters:
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of pagespeed checks to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/PagespeedTests'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/pagespeed \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListPagespeedTests(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    post:
+      operationId: create-pagespeed-test
+      summary: Create a pagespeed check
+      description: Creates a pagespeed check with the given parameters.
+      tags:
+        - pagespeed
+      parameters:
+        - name: create_pagespeed_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/PagespeedTestCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/pagespeed \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example&website_url=https://www.example.com&region=UK&check_rate=10"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreatePagespeedTest(context.Background()).
+                Name("Example").
+                WebsiteURL("https://www.example.com").
+                CheckRate(statuscake.PagespeedTestCheckRateTenMinutes).
+                Region(statuscake.PagespeedTestRegionUnitedKingdom).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
+  /pagespeed/{test_id}:
+    get:
+      operationId: get-pagespeed-test
+      summary: Retrieve a pagespeed check
+      description: Returns a pagespeed check with the given id.
+      tags:
+        - pagespeed
+      parameters:
+        - name: test_id
+          description: Pagespeed check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/PagespeedTestResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/pagespeed/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetPagespeedTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    put:
+      operationId: update-pagespeed-test
+      summary: Update a pagespeed check
+      description: Updates a pagespeed check with the given parameters.
+      tags:
+        - pagespeed
+      parameters:
+        - name: test_id
+          description: Pagespeed check ID
+          in: path
+          type: string
+          required: true
+        - name: update_pagespeed_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/PagespeedTestUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X PUT https://api.statuscake.com/v1/pagespeed/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example&region=UK&check_rate=10"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdatePagespeedTest(context.Background(), "123").
+                Name("Example").
+                CheckRate(statuscake.PagespeedTestCheckRateTenMinutes).
+                Region(statuscake.PagespeedTestRegionUnitedKingdom).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+    delete:
+      operationId: delete-pagespeed-test
+      summary: Delete a pagespeed check
+      description: Deletes a pagespeed check with the given id.
+      tags:
+        - pagespeed
+      parameters:
+        - name: test_id
+          description: Pagespeed check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X DELETE https://api.statuscake.com/v1/pagespeed/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeletePagespeedTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+  /pagespeed/{test_id}/history:
+    get:
+      operationId: list-pagespeed-test-history
+      summary: Get all pagespeed check history
+      description: |
+        Returns a list of pagespeed check history results for a given id,
+        detailing the runs performed on the StatusCake testing infrastruture.
+
+        The returned results are a paginated series. Alongside the response
+        data is a `links` object referencing the current response document,
+        `self`, and the next page in the series, `next`.
+
+        Aggregated data over the specified duration is returned in the root
+        level `metadata` field.
+      tags:
+        - pagespeed
+      parameters:
+        - name: test_id
+          description: Pagespeed check ID
+          in: path
+          type: string
+          required: true
+        - name: limit
+          description: The number of results to return from the series
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: before
+          description: Only results created before this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/PagespeedTestHistory'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/pagespeed/123/history \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListPagespeedTestHistory(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+  /ssl:
+    get:
+      operationId: list-ssl-tests
+      summary: Get all SSL checks
+      description: Returns a list of SSL checks for an account.
+      tags:
+        - ssl
+      parameters:
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of SSL checks to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SSLTests'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/ssl \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListSslTests(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    post:
+      operationId: create-ssl-test
+      summary: Create an SSL check
+      description: Creates an SSL check with the given parameters.
+      tags:
+        - ssl
+      parameters:
+        - name: create_ssl_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/SSLTestCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/ssl \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "website_url=https://www.example.com&check_rate=1800&alert_at[]=1&alert_at[]=2&alert_at[]=3&alert_reminder=true&alert_expiry=true&alert_broken=true&alert_mixed=true"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreateSslTest(context.Background()).
+                WebsiteURL("https://www.example.com").
+                CheckRate(statuscake.SSLTestCheckRateThirtyMinutes).
+                AlertAt([]string{"1", "2", "3"}).
+                AlertBroken(true).
+                AlertExpiry(true).
+                AlertMixed(true).
+                AlertReminder(true).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
+  /ssl/{test_id}:
+    get:
+      operationId: get-ssl-test
+      summary: Retrieve an SSL check
+      description: Returns an SSL check with the given id.
+      tags:
+        - ssl
+      parameters:
+        - name: test_id
+          description: SSL check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SSLTestResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/ssl/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetSslTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    put:
+      operationId: update-ssl-test
+      summary: Update an SSL check
+      description: Updates an SSL check with the given parameters.
+      tags:
+        - ssl
+      parameters:
+        - name: test_id
+          description: SSL check ID
+          in: path
+          type: string
+          required: true
+        - name: update_ssl_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/SSLTestUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X PUT https://api.statuscake.com/v1/ssl/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "check_rate=1800&alert_at[]=1&alert_at[]=2&alert_at[]=3&alert_reminder=true&alert_expiry=true&alert_broken=true&alert_mixed=true"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdateSslTest(context.Background(), "123").
+                CheckRate(statuscake.SSLTestCheckRateThirtyMinutes).
+                AlertAt([]string{"1", "2", "3"}).
+                AlertBroken(true).
+                AlertExpiry(true).
+                AlertMixed(true).
+                AlertReminder(true).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+    delete:
+      operationId: delete-ssl-test
+      summary: Delete an SSL check
+      description: Deletes an SSL check with the given id.
+      tags:
+        - ssl
+      parameters:
+        - name: test_id
+          description: Pagespeed check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X DELETE https://api.statuscake.com/v1/ssl/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeleteSslTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+  /uptime:
+    get:
+      operationId: list-uptime-tests
+      summary: Get all uptime checks
+      description: |
+        Returns a list of uptime checks for an account. Pagination fields are
+        only returned if the account associated with the API key is part of the
+        uptime beta group.
+      tags:
+        - uptime
+      parameters:
+        - name: status
+          description: Uptime check status
+          in: query
+          type: string
+          enum:
+            - down
+            - up
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of uptime checks to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: tags
+          description: Comma separated list of tags assocaited with a check
+          in: query
+          type: string
+        - name: matchany
+          description: >-
+            Include uptime checks in response that match any specified tag or
+            all tags
+          in: query
+          type: boolean
+          default: false
+        - name: nouptime
+          description: Do not calculate uptime percentages for results
+          in: query
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UptimeTests'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListUptimeTests(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    post:
+      operationId: create-uptime-test
+      summary: Create an uptime check
+      description: Creates an uptime check with the given parameters.
+      tags:
+        - uptime
+      parameters:
+        - name: create_uptime_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/UptimeTestCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/uptime \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example%20HTTP&test_type=HTTP&website_url=https://www.example.com&check_rate=1800&regions[]=london&regions[]=paris"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreateUptimeTest(context.Background()).
+                Name("Example HTTP").
+                TestType(statuscake.UptimeTestTypeHTTP).
+                WebsiteURL("https://www.example.com").
+                CheckRate(statuscake.UptimeTestCheckRateThirtyMinutes).
+                Regions([]string{"london", "paris"}).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
+  /uptime/{test_id}:
+    get:
+      operationId: get-uptime-test
+      summary: Retrieve an uptime check
+      description: Returns an uptime check with the given id.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UptimeTestResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetUptimeTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+    put:
+      operationId: update-uptime-test
+      summary: Update an uptime check
+      description: Updates an uptime check with the given parameters.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+        - name: update_uptime_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/UptimeTestUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X PUT https://api.statuscake.com/v1/uptime/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example%20HTTP&check_rate=1800&regions[]=london&regions[]=paris"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdateUptimeTest(context.Background(), "123").
+                Name("Example HTTP").
+                CheckRate(statuscake.UptimeTestCheckRateThirtyMinutes).
+                Regions([]string{"london", "paris"}).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+    delete:
+      operationId: delete-uptime-test
+      summary: Delete an uptime check
+      description: Deletes an uptime check with the given id.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X DELETE https://api.statuscake.com/v1/uptime/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeleteUptimeTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
+  /uptime/{test_id}/history:
+    get:
+      operationId: list-uptime-test-history
+      summary: Get all uptime check history
+      description: |
+        Returns a list of uptime check history results for a given id,
+        detailing the runs performed on the StatusCake testing infrastruture.
+
+        The returned results are a paginated series. Alongside the response
+        data is a `links` object referencing the current response document,
+        `self`, and the next page in the series, `next`.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+        - name: limit
+          description: The number of results to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: before
+          description: Only results created before this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UptimeTestHistory'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime/123/history \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListUptimeTestHistory(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+  /uptime/{test_id}/periods:
+    get:
+      operationId: list-uptime-test-periods
+      summary: Get all uptime check periods
+      description: |
+        Returns a list of uptime check periods for a given id, detailing the
+        creation time of the period, when it ended and the duration.
+
+        The returned results are a paginated series. Alongside the response
+        data is a `links` object referencing the current response document,
+        `self`, and the next page in the series, `next`.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+        - name: limit
+          description: The number of uptime check periods to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: before
+          description: >-
+            Only check periods created before this UNIX timestamp will be
+            returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UptimeTestPeriods'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime/123/periods \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListUptimeTestPeriods(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+  /uptime/{test_id}/alerts:
+    get:
+      operationId: list-uptime-test-alerts
+      summary: Get all uptime check alerts
+      description: |
+        Returns a list of uptime check alerts for a given id.
+
+        The returned results are a paginated series. Alongside the response
+        data is a `links` object referencing the current response document,
+        `self`, and the next page in the series, `next`.
+      tags:
+        - uptime
+      parameters:
+        - name: test_id
+          description: Uptime check ID
+          in: path
+          type: string
+          required: true
+        - name: limit
+          description: The number of uptime alerts to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: before
+          description: Only alerts triggered before this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UptimeTestAlerts'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime/123/alerts \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListSentAlerts(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+  /uptime-locations:
+    get:
+      operationId: list-uptime-monitoring-locations
+      summary: Get all uptime monitoring locations
+      description: |
+        Returns a list of locations detailing server information for uptime
+        monitoring servers. This information can be used to create further
+        checks using the API.
+      tags:
+        - locations
+      parameters:
+        - name: best
+          description: Return only locations with the least number of checks
+          in: query
+          type: boolean
+          default: false
+        - name: location
+          description: Alpha-3 ISO 3166-1 country code
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MonitoringLocations'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/uptime-locations \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListUptimeMonitoringLocations(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+  /pagespeed-locations:
+    get:
+      operationId: list-pagespeed-monitoring-locations
+      summary: Get all pagespeed monitoring locations
+      description: |
+        Returns a list of locations detailing server information for pagespeed
+        monitoring servers. This information can be used to create further
+        checks using the API.
+      tags:
+        - locations
+      parameters:
+        - name: best
+          description: Return only locations with the least number of checks
+          in: query
+          type: boolean
+          default: false
+        - name: location
+          description: Alpha-2 ISO 3166-1 country code
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MonitoringLocations'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/pagespeed-locations \
+              -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListPagespeedMonitoringLocations(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
+definitions:
+  APIResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        description: Response body
+        required:
+          - new_id
+        type: object
+        properties:
+          new_id:
+            description: ID of newly created resource.
+            type: string
+            x-export-param-name-override: NewID
+    example:
+      data:
+        new_id: '123'
+  APIError:
+    type: object
+    properties:
+      message:
+        description: Additional message
+        type: string
+      errors:
+        description: List of error messages
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+    example:
+      message: Something went wrong
+      errors:
+        field_name:
+          - field name is required
+          - field name is not a valid URL
+  Links:
+    required:
+      - self
+    type: object
+    properties:
+      self:
+        description: The URL that created the current response document
+        type: string
+        format: uri
+    additionalProperties:
+      description: |
+        Additional links. The nature of these fields is described in the
+        endpoint description
+      type: null
+  Metadata:
+    type: object
+    additionalProperties:
+      description: |
+        Additional metadata. The nature of these fields is described in the
+        endpoint description
+      type: null
+    x-allow-empty: true
+  Pagination:
+    required:
+      - page
+      - per_page
+      - page_count
+      - total_count
+    type: object
+    properties:
+      page:
+        description: The current page of results
+        type: integer
+        format: int32
+        minimum: 1
+      per_page:
+        description: The number of results per page
+        type: integer
+        format: int32
+        minimum: 1
+      page_count:
+        description: The total number of pages
+        type: integer
+        format: int32
+        minimum: 1
+      total_count:
+        description: The total number of results
+        type: integer
+        format: int32
+        minimum: 1
+  ContactGroups:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of contact groups
+        type: array
+        items:
+          $ref: '#/definitions/ContactGroup'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          name: Operations Team
+          email_addresses:
+            - johnsmith@example.com
+            - janesmith@example.com
+          integrations:
+            - '1'
+            - '2'
+            - '3'
+          mobile_numbers:
+            - '447712345678'
+            - '447987462344'
+          ping_url: https://www.example.com/notifications
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  ContactGroup:
+    required:
+      - id
+      - name
+      - email_addresses
+      - mobile_numbers
+      - integrations
+    type: object
+    properties:
+      id:
+        description: Contact group ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the contact group
+        type: string
+      email_addresses:
+        description: List of email addresses
+        type: array
+        items:
+          type: string
+      integrations:
+        description: List of configured integration IDs
+        type: array
+        items:
+          type: string
+      mobile_numbers:
+        description: List of international format mobile phone numbers
+        type: array
+        items:
+          type: string
+      ping_url:
+        description: |
+          URL or IP address of an endpoint to push uptime events. Currently
+          this only supports HTTP GET endpoints
+        type: string
+        format: uri
+        x-export-param-name-override: PingURL
+  ContactGroupCreateRequest:
+    required:
+      - name
+    type: object
+    properties:
+      name:
+        description: Name of the contact group
+        type: string
+      email_addresses:
+        description: List of email addresses
+        type: array
+        items:
+          type: string
+      email_addresses_csv:
+        deprecated: true
+        description: Comma separated list of email addresses
+        type: string
+      integrations:
+        description: List of integration IDs
+        type: array
+        items:
+          type: string
+      integrations_csv:
+        deprecated: true
+        description: Comma separated list of integration IDs
+        type: string
+      mobile_numbers:
+        description: List of international format mobile phone numbers
+        type: array
+        items:
+          type: string
+      mobile_numbers_csv:
+        deprecated: true
+        description: Comma separated list of international format mobile phone numbers
+        type: string
+      ping_url:
+        description: |
+          URL or IP address of an endpoint to push uptime events. Currently
+          this only supports HTTP GET endpoints
+        type: string
+        format: uri
+        x-export-param-name-override: PingURL
+  ContactGroupResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ContactGroup'
+    example:
+      data:
+        id: '123'
+        name: Operations Team
+        email_addresses:
+          - johnsmith@example.com
+          - janesmith@example.com
+        integrations:
+          - '1'
+          - '2'
+          - '3'
+        mobile_numbers:
+          - '447712345678'
+          - '447987462344'
+        ping_url: https://www.example.com/notifications
+  ContactGroupUpdateRequest:
+    type: object
+    properties:
+      name:
+        description: Name of the contact group
+        type: string
+      email_addresses:
+        description: List of email addresses
+        type: array
+        items:
+          type: string
+      email_addresses_csv:
+        deprecated: true
+        description: Comma separated list of email addresses
+        type: string
+      integrations:
+        description: List of integration IDs
+        type: array
+        items:
+          type: string
+      integrations_csv:
+        deprecated: true
+        description: Comma separated list of integration IDs
+        type: string
+      mobile_numbers:
+        description: List of international format mobile phone numbers
+        type: array
+        items:
+          type: string
+      mobile_numbers_csv:
+        deprecated: true
+        description: Comma separated list of international format mobile phone numbers
+        type: string
+      ping_url:
+        description: |
+          URL or IP address of an endpoint to push uptime events. Currently
+          this only supports HTTP GET endpoints
+        type: string
+        format: uri
+        x-export-param-name-override: PingURL
+  MaintenanceWindows:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of maintenance windows
+        type: array
+        items:
+          $ref: '#/definitions/MaintenanceWindow'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          name: Weekends
+          end_at: '2020-10-25T23:59:59+00:00'
+          repeat_interval: 1w
+          start_at: '2020-10-24T00:00:00+00:00'
+          state: active
+          tags:
+            - tag1
+            - tag2
+          tests:
+            - '1'
+            - '2'
+            - '3'
+            - '4'
+          timezone: UTC
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  MaintenanceWindow:
+    required:
+      - id
+      - name
+      - end_at
+      - repeat_interval
+      - start_at
+      - state
+      - tags
+      - tests
+      - timezone
+    type: object
+    properties:
+      id:
+        description: Maintenance window ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the maintenance window
+        type: string
+      end_at:
+        description: End of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: End
+      repeat_interval:
+        $ref: '#/definitions/MaintenanceWindowRepeatInterval'
+      start_at:
+        description: Start of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Start
+      state:
+        $ref: '#/definitions/MaintenanceWindowState'
+      tags:
+        description: |
+          List of tags used to include matching uptime checks in this
+          maintenance window
+        type: array
+        items:
+          type: string
+      tests:
+        description: |
+          List of uptime check IDs explicitly included in this maintenance
+          window
+        type: array
+        items:
+          type: string
+      timezone:
+        description: >-
+          Standard
+          [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)
+          associated with this maintenance window
+        type: string
+  MaintenanceWindowCreateRequest:
+    required:
+      - name
+      - end_at
+      - start_at
+      - timezone
+    type: object
+    properties:
+      name:
+        description: Name of the maintenance window
+        type: string
+      end_at:
+        description: End of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: End
+      repeat_interval:
+        $ref: '#/definitions/MaintenanceWindowRepeatInterval'
+        default: never
+      start_at:
+        description: Start of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Start
+      tags:
+        description: |
+          List of tags used to include matching uptime checks in this
+          maintenance window. At least one of `tests` and `tags` must be
+          present in the request
+        type: array
+        items:
+          type: string
+      tags_csv:
+        deprecated: true
+        description: |
+          Comma separated list of tags used to include matching uptime checks
+          in this maintenance window. At least one of `tests_csv` and
+          `tags_csv` must be present in the request
+        type: string
+      tests:
+        description: |
+          List of uptime check IDs explicitly included in this maintenance
+          window. At least one of `tests` and `tags` must be present in the
+          request
+        type: array
+        items:
+          type: string
+      tests_csv:
+        deprecated: true
+        description: |
+          Comma separated list of uptime check IDs explicitly included in this
+          maintenance window. At least one of `tests_csv` and `tags_csv` must
+          be present in the request
+        type: string
+      timezone:
+        description: >-
+          Standard
+          [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)
+          associated with this maintenance window
+        type: string
+  MaintenanceWindowResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/MaintenanceWindow'
+    example:
+      id: '123'
+      name: Weekends
+      end_at: '2020-10-25T23:59:59+00:00'
+      repeat_interval: 1w
+      start_at: '2020-10-24T00:00:00+00:00'
+      state: active
+      tags:
+        - tag1
+        - tag2
+      tests:
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+      timezone: UTC
+  MaintenanceWindowUpdateRequest:
+    type: object
+    properties:
+      name:
+        description: Name of the maintenance window
+        type: string
+      end_at:
+        description: End of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: End
+      repeat_interval:
+        $ref: '#/definitions/MaintenanceWindowRepeatInterval'
+      start_at:
+        description: Start of the maintenance window (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Start
+      tags:
+        description: |
+          List of tags used to include matching uptime checks in this
+          maintenance window
+        type: array
+        items:
+          type: string
+      tags_csv:
+        deprecated: true
+        description: |
+          Comma separated list of tags used to include matching uptime checks
+          in this maintenance window
+        type: string
+      tests:
+        description: |
+          List of uptime check IDs explicitly included in this maintenance
+          window
+        type: array
+        items:
+          type: string
+      tests_csv:
+        deprecated: true
+        description: |
+          Comma separated list of uptime check IDs explicitly included in this
+          maintenance window
+        type: string
+      timezone:
+        description: >-
+          Standard
+          [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)
+          associated with this maintenance window
+        type: string
+  MonitoringLocations:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        description: List of monitoring locations
+        type: array
+        items:
+          $ref: '#/definitions/MonitoringLocation'
+    example:
+      data:
+        - description: United Kingdom, London - 5
+          ipv4: 178.62.78.199
+          ipv6: 2a03:b0c0:1:d0::5e:f001
+          region: United Kingdom / London
+          region_code: london
+          status: up
+  MonitoringLocation:
+    required:
+      - description
+      - region
+      - region_code
+      - status
+    type: object
+    properties:
+      description:
+        description: Server description
+        type: string
+      ipv4:
+        description: Server IPv4 address
+        type: string
+        format: ipv4
+        x-export-param-name-override: IPv4
+      ipv6:
+        description: Server IPv6 address
+        type: string
+        format: ipv6
+        x-export-param-name-override: IPv6
+      region:
+        description: Server region
+        type: string
+      region_code:
+        description: Server region code
+        type: string
+      status:
+        $ref: '#/definitions/MonitoringLocationStatus'
+  PagespeedTests:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of pagespeed checks
+        type: array
+        items:
+          $ref: '#/definitions/PagespeedTest'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          name: Example
+          website_url: https://www.example.com
+          check_rate: 10
+          alert_bigger: 0
+          alert_slower: 0
+          alert_smaller: 0
+          contact_groups:
+            - '1'
+            - '2'
+            - '3'
+          latest_stats:
+            loadtime: 209
+            filesize: 160.513
+            requests: 5
+            has_issue: true
+            latest_issue: |
+              The Total Load Time of the Page (4841/ms) is longer than the alert
+              threshold of 0/ms
+          location: PAGESPD-UK5
+          paused: false
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  PagespeedTest:
+    required:
+      - id
+      - name
+      - website_url
+      - check_rate
+      - alert_bigger
+      - alert_slower
+      - alert_smaller
+      - contact_groups
+      - location
+      - paused
+    type: object
+    properties:
+      id:
+        description: Pagespeed check ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the check
+        type: string
+      website_url:
+        description: URL or IP address of the website under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/PagespeedTestCheckRate'
+      alert_bigger:
+        description: >
+          An alert will be sent if the size of the page is larger than this
+          value (kb). A value of 0 prevents alerts being sent.
+        type: integer
+        format: int32
+        minimum: 0
+      alert_slower:
+        description: >
+          An alert will be sent if the load time of the page exceeds this value
+          (ms). A value of 0 prevents alerts being sent
+        type: integer
+        format: int64
+        minimum: 0
+      alert_smaller:
+        description: >
+          An alert will be sent if the size of the page is smaller than this
+          value (kb). A value of 0 prevents alerts being sent
+        type: integer
+        format: int32
+        minimum: 0
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      latest_stats:
+        $ref: '#/definitions/PagespeedTestStats'
+      location:
+        description: Assigned monitoring location on which checks will be run
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+  PagespeedTestCreateRequest:
+    required:
+      - name
+      - website_url
+      - check_rate
+      - region
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      website_url:
+        description: URL or IP address of the website under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/PagespeedTestCheckRate'
+      alert_bigger:
+        description: >
+          An alert will be sent if the size of the page is larger than this
+          value (kb). A value of 0 prevents alerts being sent.
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+      alert_slower:
+        description: >
+          An alert will be sent if the load time of the page exceeds this value
+          (ms). A value of 0 prevents alerts being sent
+        type: integer
+        format: int64
+        minimum: 0
+        default: 0
+      alert_smaller:
+        description: >
+          An alert will be sent if the size of the page is smaller than this
+          value (kb). A value of 0 prevents alerts being sent
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+        default: false
+      region:
+        $ref: '#/definitions/PagespeedTestRegion'
+  PagespeedTestHistory:
+    required:
+      - data
+      - links
+    type: object
+    properties:
+      data:
+        description: List of pagespeed check history results
+        type: array
+        items:
+          $ref: '#/definitions/PagespeedTestHistoryResult'
+      links:
+        description: Links to related documents
+        $ref: '#/definitions/Links'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Metadata'
+    example:
+      data:
+        - created_at: '2017-11-04T11:58:23+00:00'
+          filesize: 169.342
+          har_location: >-
+            https://16a0fd6b5b5bece1d29a-7aa19249e604542958e6a694f67d0bbf.ssl.cf5.rackcdn.com/b8f1cc4f-d6f0-495b-a478-7577d174f9fe.json
+          loadtime: 361
+          requests: 9
+          throttling: 4G
+      links:
+        self: https://api.statuscake.com/v1/pagespeed/1/history?before=1509796803
+        next: https://api.statuscake/com/v1/pagespeed/1/history?before=1509796703
+      metadata:
+        aggregates:
+          filesize:
+            min: 8
+            max: 9
+            avg: 8.129
+          loadtime:
+            min: 162
+            max: 3344
+            avg: 410.292
+          requests:
+            min: 160.513
+            max: 169.342
+            avg: 161.654
+  PagespeedTestHistoryResult:
+    required:
+      - created_at
+      - filesize
+      - har_location
+      - loadtime
+      - requests
+      - throttling
+    type: object
+    properties:
+      created_at:
+        description: Creation time of the result (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Created
+      filesize:
+        description: Recorded filesize (kb)
+        type: number
+        format: float
+        minimum: 0
+      har_location:
+        description: Location of the saved HAR file
+        type: string
+        x-export-param-name-override: HARLocation
+      loadtime:
+        description: Recorded loadtime (ms)
+        type: integer
+        format: int64
+        minimum: 0
+      requests:
+        description: Recorded request count
+        type: integer
+        format: int32
+        minimum: 0
+      throttling:
+        $ref: '#/definitions/PagespeedTestThrottling'
+  PagespeedTestResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/PagespeedTest'
+    example:
+      data:
+        id: '123'
+        name: Example
+        website_url: https://www.example.com
+        check_rate: 10
+        alert_bigger: 0
+        alert_slower: 0
+        alert_smaller: 0
+        contact_groups:
+          - '1'
+          - '2'
+          - '3'
+        latest_stats:
+          loadtime: 209
+          filesize: 160.513
+          requests: 5
+          has_issue: true
+          latest_issue: |
+            The Total Load Time of the Page (4841/ms) is longer than the alert
+            threshold of 0/ms
+        location: PAGESPD-UK5
+        paused: false
+  PagespeedTestStats:
+    required:
+      - filesize
+      - has_issue
+      - loadtime
+      - requests
+    type: object
+    properties:
+      filesize:
+        description: Latest recorded filesize (kb)
+        type: number
+        format: float
+        minimum: 0
+      has_issue:
+        description: Whether the latest check has an issue
+        type: boolean
+      loadtime:
+        description: Latest recorded loadtime (ms)
+        type: integer
+        format: int32
+        minimum: 0
+      requests:
+        description: Latest recorded request count
+        type: integer
+        format: int32
+        minimum: 0
+      latest_issue:
+        description: Latest recorded issue
+        type: string
+  PagespeedTestUpdateRequest:
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      check_rate:
+        $ref: '#/definitions/PagespeedTestCheckRate'
+      alert_bigger:
+        description: >
+          An alert will be sent if the size of the page is larger than this
+          value (kb). A value of 0 prevents alerts being sent.
+        type: integer
+        format: int32
+        minimum: 0
+      alert_slower:
+        description: >
+          An alert will be sent if the load time of the page exceeds this value
+          (ms). A value of 0 prevents alerts being sent
+        type: integer
+        format: int64
+        minimum: 0
+      alert_smaller:
+        description: >
+          An alert will be sent if the size of the page is smaller than this
+          value (kb). A value of 0 prevents alerts being sent
+        type: integer
+        format: int32
+        minimum: 0
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      region:
+        $ref: '#/definitions/PagespeedTestRegion'
+  SSLTests:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of SSL checks
+        type: array
+        items:
+          $ref: '#/definitions/SSLTest'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          website_url: https://www.example.com
+          check_rate: 1800
+          alert_at:
+            - 1
+            - 7
+            - 30
+          alert_broken: true
+          alert_expiry: true
+          alert_mixed: true
+          alert_reminder: true
+          certificate_score: 55
+          certificate_status: CERT_OK
+          cipher: TLS_RSA_WITH_AES_128_GCM_SHA256
+          cipher_score: 70
+          contact_groups:
+            - '1'
+            - '2'
+            - '3'
+          issuer_common_name: Let's Encrypt Authority X3
+          flags:
+            follow_redirects: true
+            has_mixed: true
+            has_pfs: true
+            is_broken: false
+            is_expired: false
+            is_extended: true
+            is_missing: false
+            is_revoked: false
+          follow_redirects: true
+          hostname: svc.example.com
+          last_reminder: 0
+          mixed_content:
+            - src: http://www.example.com/public/images/teapot.png
+              type: img
+            - src: http://www.example.com/public/css/style.css
+              type: link
+          paused: false
+          updated_at: '2017-10-24T09:02:25+00:00'
+          user_agent: >-
+            Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+            like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.51
+            mycustomstring
+          valid_from: '2017-10-10T14:06:00+00:00'
+          valid_until: '2017-12-29T00:00:00+00:00'
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  SSLTest:
+    required:
+      - id
+      - website_url
+      - check_rate
+      - alert_at
+      - alert_reminder
+      - alert_expiry
+      - alert_broken
+      - alert_mixed
+      - contact_groups
+      - follow_redirects
+      - mixed_content
+      - paused
+    type: object
+    properties:
+      id:
+        description: SSL check ID
+        type: string
+        x-export-param-name-override: ID
+      website_url:
+        description: URL of the server under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/SSLTestCheckRate'
+      alert_at:
+        description: List representing when alerts should be sent (days).
+        type: array
+        items:
+          type: integer
+          format: int32
+      alert_broken:
+        description: Whether to enable alerts when SSL certificate issues are found
+        type: boolean
+      alert_expiry:
+        description: Whether to enable alerts when the SSL certificate is to expire
+        type: boolean
+      alert_mixed:
+        description: Whether to enable alerts when mixed content is found
+        type: boolean
+      alert_reminder:
+        description: Whether to enable alert reminders
+        type: boolean
+      certificate_score:
+        description: SSL certificate score (%)
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+      certificate_status:
+        description: SSL certificate status
+        type: string
+      cipher:
+        description: SSL/TLS cipher suite belonging to the SSL certificate
+        type: string
+      cipher_score:
+        description: SSL certificate cipher strength (%)
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      issuer_common_name:
+        description: Issuer of the SSL certificate
+        type: string
+      flags:
+        $ref: '#/definitions/SSLTestFlags'
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+      hostname:
+        description: Hostname of the server under test
+        type: string
+      last_reminder:
+        description: The last reminder to have been sent (days)
+        type: integer
+        format: int32
+        minimum: 0
+      mixed_content:
+        description: List of mixed content resources
+        type: array
+        items:
+          $ref: '#/definitions/SSLTestMixedContent'
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      updated_at:
+        description: When the SSL certificate was last updated (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Updated
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+      valid_from:
+        description: SSL certificate validity start (RFC3339 format)
+        type: string
+        format: date-time
+      valid_until:
+        description: SSL certificate validity end (RFC3339 format)
+        type: string
+        format: date-time
+  SSLTestCreateRequest:
+    required:
+      - website_url
+      - check_rate
+    type: object
+    properties:
+      website_url:
+        description: URL of the server under test. Must begin with https://
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/SSLTestCheckRate'
+      alert_at:
+        description: |
+          List representing when alerts should be sent (days). Must be exactly
+          3 numerical values
+        type: array
+        items:
+          type: integer
+          format: int32
+      alert_at_csv:
+        deprecated: true
+        description: |
+          Comma separated list representing when alerts should be sent (days).
+          Must be exactly 3 numerical values
+        type: string
+      alert_broken:
+        description: Whether to enable alerts when SSL certificate issues are found
+        type: boolean
+        default: false
+      alert_expiry:
+        description: Whether to enable alerts when the SSL certificate is to expire
+        type: boolean
+        default: false
+      alert_mixed:
+        description: Whether to enable alerts when mixed content is found
+        type: boolean
+        default: false
+      alert_reminder:
+        description: Whether to enable alert reminders
+        type: boolean
+        default: false
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+        default: false
+      hostname:
+        description: Hostname of the server under test
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+        default: false
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+  SSLTestFlags:
+    required:
+      - follow_redirects
+      - has_mixed
+      - has_pfs
+      - is_broken
+      - is_expired
+      - is_extended
+      - is_missing
+      - is_revoked
+    type: object
+    properties:
+      follow_redirects:
+        description: Wherher follow redirects has been enabled for the SSL check
+        type: boolean
+      has_mixed:
+        description: Whether the requested page has mixed content
+        type: boolean
+      has_pfs:
+        description: Whether the SSL certificate has Perfect Forward Security enabled
+        type: boolean
+        x-export-param-name-override: HasPFS
+      is_broken:
+        description: Whether the SSL certificate has errors
+        type: boolean
+      is_expired:
+        description: Whether the SSL certificate has expired
+        type: boolean
+      is_extended:
+        description: Whether the SSL certificate has Extended Validation (EV)
+        type: boolean
+      is_missing:
+        description: Whether the SSL certificate is missing
+        type: boolean
+      is_revoked:
+        description: >-
+          Whether the SSL certificate has been revoked by the certificate
+          authority
+        type: boolean
+  SSLTestMixedContent:
+    required:
+      - src
+      - type
+    type: object
+    properties:
+      src:
+        description: Full path to the content resource
+        type: string
+        x-export-param-name-override: URL
+      type:
+        description: Type of the content
+        type: string
+  SSLTestResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/SSLTest'
+    example:
+      data:
+        id: '123'
+        website_url: https://www.example.com
+        check_rate: 1800
+        alert_at:
+          - 1
+          - 7
+          - 30
+        alert_broken: true
+        alert_expiry: true
+        alert_mixed: true
+        alert_reminder: true
+        certificate_score: 55
+        certificate_status: CERT_OK
+        cipher: TLS_RSA_WITH_AES_128_GCM_SHA256
+        cipher_score: 70
+        contact_groups:
+          - '1'
+          - '2'
+          - '3'
+        issuer_common_name: Let's Encrypt Authority X3
+        flags:
+          follow_redirects: true
+          has_mixed: true
+          has_pfs: true
+          is_broken: false
+          is_expired: false
+          is_extended: true
+          is_missing: false
+          is_revoked: false
+        follow_redirects: true
+        hostname: svc.example.com
+        last_reminder: 0
+        mixed_content:
+          - src: http://www.example.com/public/images/teapot.png
+            type: img
+          - src: http://www.example.com/public/css/style.css
+            type: link
+        paused: false
+        updated_at: '2017-10-24T09:02:25+00:00'
+        user_agent: >-
+          Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+          like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.51
+          mycustomstring
+        valid_from: '2017-10-10T14:06:00+00:00'
+        valid_until: '2017-12-29T00:00:00+00:00'
+  SSLTestUpdateRequest:
+    type: object
+    properties:
+      check_rate:
+        $ref: '#/definitions/SSLTestCheckRate'
+      alert_at:
+        description: |
+          List representing when alerts should be sent (days). Must be exactly
+          3 numerical values
+        type: array
+        items:
+          type: integer
+          format: int32
+      alert_at_csv:
+        deprecated: true
+        description: |
+          Comma separated list representing when alerts should be sent (days).
+          Must be exactly 3 numerical values
+        type: string
+      alert_broken:
+        description: Whether to enable alerts when SSL certificate issues are found
+        type: boolean
+      alert_expiry:
+        description: Whether to enable alerts when the SSL certificate is to expire
+        type: boolean
+      alert_mixed:
+        description: Whether to enable alerts when mixed content is found
+        type: boolean
+      alert_reminder:
+        description: Whether to enable alert reminders
+        type: boolean
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+      hostname:
+        description: Hostname of the server under test
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+  UptimeTests:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of uptime checks
+        type: array
+        items:
+          $ref: '#/definitions/UptimeTestOverview'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          name: example HTTP check
+          website_url: https://www.example.com
+          test_type: HTTP
+          check_rate: 1800
+          contact_groups:
+            - '1'
+            - '2'
+            - '3'
+          paused: false
+          status: up
+          tags:
+            - tag1
+            - tag2
+          uptime: 99.9
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  UptimeTest:
+    required:
+      - id
+      - name
+      - test_type
+      - website_url
+      - check_rate
+      - confirmation
+      - contact_groups
+      - dns_ips
+      - do_not_find
+      - enable_ssl_alert
+      - follow_redirects
+      - include_header
+      - paused
+      - processing
+      - servers
+      - status
+      - status_codes
+      - tags
+      - timeout
+      - trigger_rate
+      - uptime
+      - use_jar
+    type: object
+    properties:
+      id:
+        description: Uptime check ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the check
+        type: string
+      test_type:
+        $ref: '#/definitions/UptimeTestType'
+      website_url:
+        description: URL or IP address of the server under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/UptimeTestCheckRate'
+      confirmation:
+        description: |
+          Number of confirmation servers to confirm downtime before an alert is
+          triggered
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 3
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      custom_header:
+        description: JSON object. Represents headers to be sent when making requests
+        type: string
+      dns_ips:
+        description: List of IP addresses to compare against returned DNS records
+        type: array
+        items:
+          type: string
+        x-export-param-name-override: DNSIPs
+      dns_server:
+        description: Hostname or IP address of the nameserver to query
+        type: string
+        x-export-param-name-override: DNSServer
+      do_not_find:
+        description: |
+          Whether to consider the check as down if the content is present
+          within the response
+        type: boolean
+      enable_ssl_alert:
+        description: Whether to send an alert if the SSL certificate is soon to expire
+        type: boolean
+        x-export-param-name-override: EnableSSLAlert
+      final_endpoint:
+        description: Specify where the redirect chain should end
+        type: string
+      find_string:
+        description: String to look for within the response. Considered down if not found
+        type: string
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+      include_header:
+        description: Include header content in string match search
+        type: boolean
+      host:
+        description: Name of the hosting provider
+        type: string
+      last_tested_at:
+        description: When the check was last run (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: LastTested
+      next_location:
+        description: The server location the check will run next
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      port:
+        description: Destination port for TCP checks
+        type: integer
+        format: int32
+        minimum: 0
+      post_body:
+        description: >-
+          JSON object. Payload submitted with the request. Setting this updates
+          the check to use the HTTP POST verb
+        type: string
+      post_raw:
+        description: Raw HTTP POST string to send to the server
+        type: string
+      processing:
+        description: Whether the check is currently being processed
+        type: boolean
+      processing_on:
+        description: The server location the check is currently being run
+        type: string
+      processing_state:
+        $ref: '#/definitions/UptimeTestProcessingState'
+      servers:
+        description: List of assigned monitoring locations on which to run checks
+        type: array
+        items:
+          $ref: '#/definitions/MonitoringLocation'
+      status:
+        $ref: '#/definitions/UptimeTestStatus'
+      status_codes:
+        description: List of status codes that trigger an alert
+        type: array
+        items:
+          type: string
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      timeout:
+        description: The number of seconds to wait to receive the first byte
+        type: integer
+        format: int32
+        minimum: 0
+      trigger_rate:
+        description: The number of minutes to wait before sending an alert
+        type: integer
+        format: int32
+        minimum: 0
+      uptime:
+        description: Uptime percentage for a check
+        type: number
+        format: float
+        minimum: 0
+      use_jar:
+        description: Whether to enable cookie storage
+        type: boolean
+        x-export-param-name-override: UseJAR
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+  UptimeTestAlerts:
+    required:
+      - data
+      - links
+    type: object
+    properties:
+      data:
+        description: List of uptime check alerts
+        type: array
+        items:
+          $ref: '#/definitions/UptimeTestAlert'
+      links:
+        description: Links to related documents
+        $ref: '#/definitions/Links'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Metadata'
+    example:
+      data:
+        - id: '123'
+          status: down
+          status_code: 404
+          triggered_at: '2013-02-25T14:42:41+00:00'
+      links:
+        self: https://api.statuscake.com/v1/uptime/1/alerts?before=1361803461
+        next: https://api.statuscake.com/v1/uptime/1/alerts?before=1361803361
+  UptimeTestAlert:
+    required:
+      - id
+      - status
+      - status_code
+    type: object
+    properties:
+      id:
+        description: Uptime check ID
+        type: string
+        x-export-param-name-override: ID
+      status:
+        $ref: '#/definitions/UptimeTestStatus'
+      status_code:
+        description: Uptime check status code
+        type: integer
+        format: int32
+        minimum: 0
+      triggered_at:
+        description: When the alert was triggered (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Triggered
+  UptimeTestCreateRequest:
+    required:
+      - name
+      - test_type
+      - website_url
+      - check_rate
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      test_type:
+        $ref: '#/definitions/UptimeTestType'
+      website_url:
+        description: URL or IP address of the server under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      check_rate:
+        $ref: '#/definitions/UptimeTestCheckRate'
+      basic_username:
+        description: Basic authentication username
+        type: string
+      basic_password:
+        description: Basic authentication password
+        type: string
+      confirmation:
+        description: |
+          Number of confirmation servers to confirm downtime before an alert is
+          triggered
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 3
+        default: 2
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      custom_header:
+        description: JSON object. Represents headers to be sent when making requests
+        type: string
+      do_not_find:
+        description: |
+          Whether to consider the check as down if the content is present
+          within the response
+        type: boolean
+        default: false
+      dns_ips:
+        description: List of IP addresses to compare against returned DNS records
+        type: array
+        items:
+          type: string
+        x-export-param-name-override: DNSIPs
+      dns_ips_csv:
+        deprecated: true
+        description: >-
+          Comma separated list of IP addresses to compare against returned DNS
+          records
+        type: string
+      dns_server:
+        description: Hostname or IP address of the nameserver to query
+        type: string
+        x-export-param-name-override: DNSServer
+      enable_ssl_alert:
+        description: Whether to send an alert if the SSL certificate is soon to expire
+        type: boolean
+        default: false
+        x-export-param-name-override: EnableSSLAlert
+      final_endpoint:
+        description: Specify where the redirect chain should end
+        type: string
+      find_string:
+        description: String to look for within the response. Considered down if not found
+        type: string
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+        default: false
+      host:
+        description: Name of the hosting provider
+        type: string
+      include_header:
+        description: Include header content in string match search
+        type: boolean
+        default: false
+      paused:
+        description: Whether the check should be run
+        type: boolean
+        default: false
+      port:
+        description: Destination port for TCP checks
+        type: integer
+        format: int32
+        minimum: 0
+      post_body:
+        description: >-
+          JSON object. Payload submitted with the request. Setting this updates
+          the check to use the HTTP POST verb
+        type: string
+      post_raw:
+        description: Raw HTTP POST string to send to the server
+        type: string
+      regions:
+        description: |
+          List of regions on which to run checks. The values required for this
+          parameter can be retrieved from the `GET /v1/uptime-locations`
+          endpoint.
+        type: array
+        items:
+          type: string
+      status_codes_csv:
+        description: Comma separated list of status codes that trigger an alert
+        type: string
+        x-param-string-array: StatusCodes
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      tags_csv:
+        deprecated: true
+        description: Comma separated list of tags
+        type: string
+      timeout:
+        description: The number of seconds to wait to receive the first byte
+        type: integer
+        format: int32
+        minimum: 0
+        default: 40
+      trigger_rate:
+        description: The number of minutes to wait before sending an alert
+        type: integer
+        format: int32
+        minimum: 0
+        default: 4
+      use_jar:
+        description: Whether to enable cookie storage
+        type: boolean
+        default: false
+        x-export-param-name-override: UseJAR
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+  UptimeTestHistory:
+    required:
+      - data
+      - links
+    type: object
+    properties:
+      data:
+        description: List of uptime check history results
+        type: array
+        items:
+          $ref: '#/definitions/UptimeTestHistoryResult'
+      links:
+        description: Links to related documents
+        $ref: '#/definitions/Links'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Metadata'
+    example:
+      data:
+        - created_at: '2017-11-04T11:58:23+00:00'
+          location: UKCON2
+          performance: 579
+          status_code: 200
+      links:
+        self: https://api.statuscake.com/v1/uptime/1/history?before=1509796803
+        next: https://api.statuscake.com/v1/uptime/1/history?before=1509796703
+  UptimeTestHistoryResult:
+    required:
+      - created_at
+    type: object
+    properties:
+      created_at:
+        description: Creation time of the result (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Created
+      location:
+        description: The server location the check ran
+        type: string
+      performance:
+        description: Recorded loadtime (ms)
+        type: integer
+        format: int64
+        minimum: 0
+      status_code:
+        description: Uptime check status code
+        type: integer
+        format: int32
+        minimum: 0
+  UptimeTestOverview:
+    required:
+      - id
+      - name
+      - website_url
+      - test_type
+      - check_rate
+      - contact_groups
+      - paused
+      - status
+      - tags
+    type: object
+    properties:
+      id:
+        description: Uptime check ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the check
+        type: string
+      website_url:
+        description: URL or IP address of the server under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      test_type:
+        $ref: '#/definitions/UptimeTestType'
+      check_rate:
+        $ref: '#/definitions/UptimeTestCheckRate'
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      status:
+        $ref: '#/definitions/UptimeTestStatus'
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      uptime:
+        description: Uptime percentage for a check
+        type: number
+        format: float
+        minimum: 0
+  UptimeTestPeriods:
+    required:
+      - data
+      - links
+    type: object
+    properties:
+      data:
+        description: List of uptime check periods
+        type: array
+        items:
+          $ref: '#/definitions/UptimeTestPeriod'
+      links:
+        description: Links to related documents
+        $ref: '#/definitions/Links'
+      metadata:
+        description: Response metadata
+        $ref: '#/definitions/Metadata'
+    example:
+      data:
+        - created_at: '2013-02-25T14:42:41+00:00'
+          duration: 189000
+          ended_at: '2013-02-25T14:45:50+00:00'
+          status: down
+      links:
+        self: https://api.statuscake.com/v1/uptime/1/periods?before=1361803461
+        next: https://api.statuscake.com/v1/uptime/1/periods?before=1361803361
+  UptimeTestPeriod:
+    required:
+      - created_at
+      - status
+    type: object
+    properties:
+      created_at:
+        description: When the status period was created (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Created
+      duration:
+        description: Status period duration (ms)
+        type: integer
+        format: int64
+        minimum: 0
+      ended_at:
+        description: When the status period ended (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: Ended
+      status:
+        $ref: '#/definitions/UptimeTestStatus'
+  UptimeTestResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UptimeTest'
+    example:
+      data:
+        id: '123'
+        name: example HTTP check
+        test_type: HTTP
+        website_url: https://www.example.com
+        check_rate: 1800
+        confirmation: 3
+        contact_groups:
+          - '1'
+          - '2'
+          - '3'
+        do_not_find: false
+        down_times: 0
+        enable_ssl_alert: true
+        follow_redirects: false
+        host: AWS
+        last_tested_at: '2013-01-20T14:38:18+00:00'
+        next_location: UK
+        paused: false
+        processing: true
+        processing_on: UKCON2
+        processing_state: pretest
+        servers:
+          - hostname: UKINT
+            description: United Kingdom, London - 5
+            region: United Kingdom / London
+            ipv4: 178.62.78.199
+            ipv6: 2a03:b0c0:1:d0::5e:f001
+            region_code: london
+            status: up
+        status: up
+        status_codes:
+          - '400'
+          - '401'
+          - '402'
+          - '403'
+          - '404'
+          - '405'
+          - '406'
+          - '407'
+          - '408'
+          - '409'
+          - '410'
+          - '411'
+          - '412'
+          - '413'
+          - '414'
+          - '415'
+          - '416'
+          - '417'
+          - '500'
+        tags:
+          - tag1
+          - tag2
+        timeout: 40
+        trigger_rate: 1
+        uptime: 99.9
+        use_jar: true
+  UptimeTestUpdateRequest:
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      check_rate:
+        $ref: '#/definitions/UptimeTestCheckRate'
+      basic_username:
+        description: Basic authentication username
+        type: string
+      basic_password:
+        description: Basic authentication password
+        type: string
+      confirmation:
+        description: |
+          Number of confirmation servers to confirm downtime before an alert is
+          triggered
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 3
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      contact_groups_csv:
+        deprecated: true
+        description: Comma separated list of contact group IDs
+        type: string
+      custom_header:
+        description: JSON object. Represents headers to be sent when making requests
+        type: string
+      do_not_find:
+        description: |
+          Whether to consider the check as down if the content is present
+          within the response
+        type: boolean
+      dns_ips:
+        description: List of IP addresses to compare against returned DNS records
+        type: array
+        items:
+          type: string
+        x-export-param-name-override: DNSIPs
+      dns_ips_csv:
+        deprecated: true
+        description: >-
+          Comma separated list of IP addresses to compare against returned DNS
+          records
+        type: string
+      dns_server:
+        description: Hostname or IP address of the nameserver to query
+        type: string
+        x-export-param-name-override: DNSServer
+      enable_ssl_alert:
+        description: Whether to send an alert if the SSL certificate is soon to expire
+        type: boolean
+        x-export-param-name-override: EnableSSLAlert
+      final_endpoint:
+        description: Specify where the redirect chain should end
+        type: string
+      find_string:
+        description: String to look for within the response. Considered down if not found
+        type: string
+      follow_redirects:
+        description: Whether to follow redirects when testing. Disabled by default
+        type: boolean
+      host:
+        description: Name of the hosting provider
+        type: string
+      include_header:
+        description: Include header content in string match search
+        type: boolean
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      port:
+        description: Destination port for TCP checks
+        type: integer
+        format: int32
+        minimum: 0
+      post_body:
+        description: >-
+          JSON object. Payload submitted with the request. Setting this updates
+          the check to use the HTTP POST verb
+        type: string
+      post_raw:
+        description: Raw HTTP POST string to send to the server
+        type: string
+      regions:
+        description: |
+          List of regions on which to run checks. The values required for this
+          parameter can be retrieved from the `GET /v1/uptime-locations`
+          endpoint.
+        type: array
+        items:
+          type: string
+      status_codes_csv:
+        description: Comma separated list of status codes that trigger an alert
+        type: string
+        x-param-string-array: StatusCodes
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      tags_csv:
+        deprecated: true
+        description: Comma separated list of tags
+        type: string
+      timeout:
+        description: The number of seconds to wait to receive the first byte
+        type: integer
+        format: int32
+        minimum: 0
+      trigger_rate:
+        description: The number of minutes to wait before sending an alert
+        type: integer
+        format: int32
+        minimum: 0
+      use_jar:
+        description: Whether to enable cookie storage
+        type: boolean
+        x-export-param-name-override: UseJAR
+      user_agent:
+        description: Custom user agent string set when testing
+        type: string
+  MaintenanceWindowRepeatInterval:
+    description: How often the maintenance window should occur
+    type: string
+    enum:
+      - never
+      - 1d
+      - 1w
+      - 2w
+      - 1m
+    x-enum-descriptions:
+      - a maintenance window that never reoccurs
+      - a maintenance window occuring daily
+      - a maintenance window occuring weekly
+      - a maintenance window occuring biweekly
+      - a maintenance window occuring monthly
+    x-enum-varnames:
+      - Never
+      - Daily
+      - Weekly
+      - Biweekly
+      - Monthly
+  MaintenanceWindowState:
+    description: Maintenance window state
+    type: string
+    enum:
+      - active
+      - paused
+      - pending
+    x-enum-descriptions:
+      - a maintenance window in an active state
+      - a maintenance window in a paused state
+      - a maintenance window in a pending state
+    x-enum-varnames:
+      - Active
+      - Paused
+      - Pending
+  MonitoringLocationStatus:
+    description: Server status
+    type: string
+    enum:
+      - down
+      - up
+    x-enum-descriptions:
+      - a monitoring location with a down status
+      - a monitoring location with an up status
+    x-enum-varnames:
+      - Down
+      - Up
+  PagespeedTestCheckRate:
+    description: Number of seconds between checks
+    type: integer
+    enum:
+      - 60
+      - 300
+      - 600
+      - 900
+      - 1800
+      - 3600
+      - 86400
+    x-enum-descriptions:
+      - a check rate of 1 minute
+      - a check rate of 5 minutes
+      - a check rate of 10 minutes
+      - a check rate of 15 minutes
+      - a check rate of 30 minutes
+      - a check rate of 1 hour
+      - a check rate of 1 day
+    x-enum-varnames:
+      - OneMinute
+      - FiveMinutes
+      - TenMinutes
+      - FifteenMinutes
+      - ThirtyMinutes
+      - OneHour
+      - OneDay
+  PagespeedTestRegion:
+    description: Region on which to run checks
+    type: string
+    enum:
+      - AU
+      - CA
+      - DE
+      - FR
+      - IN
+      - JP
+      - NL
+      - SG
+      - UK
+      - US
+      - USW
+    x-enum-descriptions:
+      - a testing region based in Australia
+      - a testing region based in Canada
+      - a testing region based in Germany
+      - a testing region based in France
+      - a testing region based in India
+      - a testing region based in Japan
+      - a testing region based in the Netherlands
+      - a testing region based in Singapore
+      - a testing region based in the United Kingdom
+      - a testing region based in the United States of America (East)
+      - a testing region based in the United States of America (West)
+    x-enum-varnames:
+      - Australia
+      - Canada
+      - Germany
+      - France
+      - India
+      - Japan
+      - Netherlands
+      - Singapore
+      - UnitedKingdom
+      - AmericaEast
+      - AmericaWest
+  PagespeedTestThrottling:
+    description: Simulated throttling speed
+    type: string
+    enum:
+      - NONE
+      - 3G_FAST
+      - 3G_SLOW
+      - 4G
+      - EDGE
+      - GPRS
+    x-enum-descriptions:
+      - no throttling
+      - fast 3G
+      - slow 3G
+      - 4G
+      - EDGE
+      - GPRS
+    x-enum-varnames:
+      - None
+      - Fast3G
+      - Slow3G
+      - _4G
+      - EDGE
+      - GPRS
+  SSLTestCheckRate:
+    description: Number of seconds between checks
+    type: integer
+    enum:
+      - 300
+      - 600
+      - 1800
+      - 3600
+      - 86400
+      - 2073600
+    x-enum-descriptions:
+      - a check rate of 5 minutes
+      - a check rate of 10 minutes
+      - a check rate of 30 minutes
+      - a check rate of 1 hour
+      - a check rate of 1 day
+      - a check rate of 1 week
+    x-enum-varnames:
+      - FiveMinutes
+      - TenMinutes
+      - ThirtyMinutes
+      - OneHour
+      - OneDay
+      - OneWeek
+  UptimeTestCheckRate:
+    description: Number of seconds between checks
+    type: integer
+    enum:
+      - 0
+      - 30
+      - 60
+      - 300
+      - 900
+      - 1800
+      - 3600
+      - 86400
+    x-enum-descriptions:
+      - a constant check rate
+      - a check rate of 30 seconds
+      - a check rate of 1 minute
+      - a check rate of 5 minutes
+      - a check rate of 15 minutes
+      - a check rate of 30 minutes
+      - a check rate of 1 hour
+      - a check rate of 1 day
+    x-enum-varnames:
+      - Constant
+      - ThirtySeconds
+      - OneMinute
+      - FiveMinutes
+      - FifteenMinutes
+      - ThirtyMinutes
+      - OneHour
+      - OneDay
+  UptimeTestProcessingState:
+    description: Uptime check proccessing state
+    type: string
+    enum:
+      - complete
+      - pretest
+      - retest
+      - up_retest
+    x-enum-descriptions:
+      - a completed check state
+      - a pretest check state
+      - a retest check state
+      - an up retest check state
+    x-enum-varnames:
+      - Complete
+      - Pretest
+      - Retest
+      - UpRetest
+  UptimeTestStatus:
+    description: The returned status of an uptime check
+    type: string
+    enum:
+      - down
+      - up
+    x-enum-descriptions:
+      - an uptime check with a down status
+      - an uptime check with an up status
+    x-enum-varnames:
+      - Down
+      - Up
+  UptimeTestType:
+    description: Uptime check type
+    type: string
+    enum:
+      - DNS
+      - HEAD
+      - HTTP
+      - PING
+      - SMTP
+      - SSH
+      - TCP
+    x-enum-descriptions:
+      - a DNS uptime check
+      - an HTTP uptime check (HEAD verb)
+      - an HTTP uptime check (GET or POST verbs)
+      - an PING uptime check
+      - an SMTP uptime check
+      - an SSH uptime check
+      - a TCP uptime check
