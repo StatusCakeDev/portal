@@ -1,0 +1,31 @@
+---
+id: about
+title: Introduction
+description: Welcome to the StatusCake development portal
+slug: /
+hide_table_of_contents: true
+---
+
+import DocCard from '@theme/DocCard';
+import DocClients from '@site/src/components/DocClients';
+import Cards from '@site/src/components/Cards';
+
+StatusCake is a website monitoring platform with a focus on providing
+observability for the applications you maintain. Here you will find developer
+documentation to help integrate StatusCake into your own monitoring suites.
+
+Create an [uptime check](https://app.statuscake.com/AddSite.php) or use our API
+to automate your experience
+
+## API Documentation
+
+<Cards>
+  <DocCard item={{ type: 'link', label: 'Authentication', href: '/guides/api/authentication', docId: 'api/authentication' }} />
+  <DocCard item={{ type: 'link', label: 'Ratelimiting', href: '/guides/api/ratelimiting', docId: 'api/ratelimiting' }} />
+  <DocCard item={{ type: 'link', label: 'Error Handling', href: '/guides/api/errors', docId: 'api/errors' }} />
+  <DocCard item={{ type: 'link', label: 'Parameters', href: '/guides/api/parameters', docId: 'api/parameters' }} />
+</Cards>
+
+## Begin with an SDK
+
+<DocClients />
