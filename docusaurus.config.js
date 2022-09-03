@@ -131,6 +131,13 @@ const config = {
         apiKey: 'f1d6dae27a5ebf65d6eca2de77ea4d22',
         indexName: 'statuscake',
       },
+      announcementBar: {
+        id: 'survey',
+        content: 'We are looking to improve our docs, please fill <a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSf6YdcflYefzuAswHs9VpSj29VQH1a7vqEnD6I9vmI47dwH5Q/viewform?usp=sf_link">this survey</a>',
+        backgroundColor: '#fafbfc',
+        textColor: '#091E42',
+        isCloseable: true,
+      },
       colorMode: {
         defaultMode: 'light',
         disableSwitch: false,
