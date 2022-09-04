@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkportal=self.webpackChunkportal||[]).push([[143],{28560:e=>{e.exports=JSON.parse('{"title":"References","slug":"/category/references","permalink":"/guides/category/references","navigation":{"previous":{"title":"Introduction","permalink":"/guides/intro"},"next":{"title":"Authentication","permalink":"/guides/references/authentication"}}}')}}]);

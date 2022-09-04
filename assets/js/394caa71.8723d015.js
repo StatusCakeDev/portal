@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkportal=self.webpackChunkportal||[]).push([[525],{95119:e=>{e.exports=JSON.parse('{"title":"Go","slug":"/category/go","permalink":"/guides/category/go","navigation":{"previous":{"title":"SDKs","permalink":"/guides/category/sdks"},"next":{"title":"Introduction","permalink":"/guides/sdks/go/introduction"}}}')}}]);
