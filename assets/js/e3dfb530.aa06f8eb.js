@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkportal=self.webpackChunkportal||[]).push([[662],{85615:e=>{e.exports=JSON.parse('{"title":"Tools","slug":"/category/tools","permalink":"/guides/category/tools","navigation":{"previous":{"title":"Backoff Strategies","permalink":"/guides/references/sdks/backoff"},"next":{"title":"Terraform","permalink":"/guides/references/tools/terraform"}}}')}}]);

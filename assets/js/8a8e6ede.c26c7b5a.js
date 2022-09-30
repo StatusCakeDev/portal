@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkportal=self.webpackChunkportal||[]).push([[690],{62272:t=>{t.exports=JSON.parse('{"title":"Tutorials","slug":"/category/tutorials","permalink":"/guides/category/tutorials","navigation":{"previous":{"title":"Terraform","permalink":"/guides/tools/terraform"},"next":{"title":"intro","permalink":"/guides/tutorials/intro"}}}')}}]);
