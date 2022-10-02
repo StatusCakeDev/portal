@@ -36,6 +36,7 @@ const config = {
           path: 'guides',
           routeBasePath: 'guides',
           sidebarPath: require.resolve('./sidebars.js'),
+          breadcrumbs: false,
           editUrl: 'https://github.com/StatusCakeDev/portal/tree/master/',
         },
         googleAnalytics: {
