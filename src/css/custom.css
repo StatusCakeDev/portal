@@ -14,9 +14,17 @@
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
+  --ifm-heading-font-weight: var(--ifm-font-weight-normal);
+  --ifm-menu-link-padding-vertical: 0.5rem;
+  --ifm-menu-color-hover: var(--ifm-color-primary);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
   /* Custom */
+  --doc-item-container-width: 55rem;
+  --doc-menu-link-sublist-padding-horizontal: 1.3rem;
+  --doc-page-vertical-spacing: 2rem;
+  --doc-sidebar-menu-vertical-padding: 2rem;
+  --doc-sidebar-padding: 1.5rem;
   --icon-hover-opacity: .6;
 }
 
@@ -33,6 +41,77 @@
 
   /* Custom */
   --icon-hover-opacity: .8;
+}
+
+/* Documentation */
+
+#__docusaurus [class*=docMainContainer_] {
+  padding-top: var(--doc-page-vertical-spacing);
+}
+
+#__docusaurus .theme-doc-version-banner, #__docusaurus [class*=docItemContainer_] {
+  margin: 0 auto;
+  max-width: var(--doc-item-container-width);
+}
+
+.menu {
+  padding: var(--doc-sidebar-menu-vertical-padding) var(--doc-sidebar-padding) !important;
+}
+
+.menu__link--sublist {
+  padding: var(--ifm-menu-link-padding-vertical) var(--doc-menu-link-sublist-padding-horizontal);
+}
+
+.menu__link--sublist, .navbar__item {
+  font-size: 0.9rem;
+}
+
+.menu__list {
+  padding-bottom: 1rem;
+}
+
+.menu__list .menu__list {
+  padding-left: 0;
+}
+
+.menu__list-item-collapsible:hover,
+.menu__link:not(.menu__link--active):hover {
+  background: none;
+  color: var(--ifm-font-color-base);
+}
+
+.menu__list-item-collapsible .menu__link--active {
+  color: var(--ifm-menu-color);
+}
+
+.menu__list-item-collapsible .menu__link {
+  color: var(--ifm-font-color-base);
+  font-weight: 600;
+  transition: color var(--ifm-transition-fast) var(--ifm-transition-timing-default);
+}
+
+.menu__list-item-collapsible .menu__link:hover {
+  color: var(--ifm-menu-color-hover);
+}
+
+.menu__list-item-collapsible .menu__link:hover,
+.menu__list-item-collapsible .menu__link--active {
+  background: #000;
+}
+
+.menu__list-item {
+  font-size: 0.8rem;
+}
+
+.menu__list-item-collapsible .menu__caret:before,
+.menu__list-item-collapsible .menu__link--sublist-caret:after {
+  left: 0;
+  position: absolute;
+}
+
+.menu__caret:before,
+.menu__link--sublist-caret:after {
+  background: var(--ifm-menu-link-sublist-icon) center / 1rem 1rem;
 }
 
 .icon:before {
