@@ -64,6 +64,11 @@ const config = {
         disableSwitch: false,
         respectPrefersColorScheme: true,
       },
+      docs: {
+        sidebar: {
+          autoCollapseCategories: true,
+        },
+      },
       navbar: {
         title: 'My Site',
         logo: {
@@ -83,7 +88,6 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
-        ],
       },
       footer: {
         style: 'dark',
