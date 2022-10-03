@@ -82,7 +82,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           breadcrumbs: false,
           showLastUpdateTime: true,
-          editUrl: 'https://github.com/StatusCakeDev/portal/tree/master/',
+          editUrl: 'https://github.com/StatusCakeDev/portal/edit/master/',
         },
         googleAnalytics: {
           trackingID: 'UA-32558906-2',
