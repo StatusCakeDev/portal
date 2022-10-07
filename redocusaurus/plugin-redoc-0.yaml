@@ -19,7 +19,7 @@ info:
     Documentation on error handling can be found
     [here](https://developers.statuscake.com/guides/api/errors).
 
-    # Handling Input Paramerters
+    # Handling Input Parameters
 
     Documentation on input parameters, including how to pass arrays to API
     endpoints can be found
