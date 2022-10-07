@@ -1,7 +1,29 @@
 swagger: '2.0'
 info:
   title: StatusCake API
-  description: StatusCake API endpoints to manage monitoring resources
+  description: |
+    StatusCake API endpoints to manage monitoring resources.
+
+    # Authentication
+
+    Documentation on API authentication can be found
+    [here](https://developers.statuscake.com/guides/api/authentication).
+
+    # Ratelimiting
+
+    Documentation on API ratelimiting can be found
+    [here](https://developers.statuscake.com/guides/api/ratelimiting).
+
+    # Errors
+
+    Documentation on error handling can be found
+    [here](https://developers.statuscake.com/guides/api/errors).
+
+    # Handling Input Paramerters
+
+    Documentation on input parameters, including how to pass arrays to API
+    endpoints can be found
+    [here](https://developers.statuscake.com/guides/api/parameters).
   version: 1.0.0
   termsOfService: https://www.statuscake.com/terms-and-conditions/
   contact:
