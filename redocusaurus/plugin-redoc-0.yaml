@@ -1758,11 +1758,6 @@ paths:
       tags:
         - locations
       parameters:
-        - name: location
-          description: Alpha-3 ISO 3166-1 country code
-          deprecated: true
-          in: query
-          type: string
         - name: region_code
           description: Server region code
           in: query
