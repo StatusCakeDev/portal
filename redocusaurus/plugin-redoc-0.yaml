@@ -943,6 +943,12 @@ paths:
           type: integer
           format: int64
           minimum: 0
+        - name: after
+          description: Only results created after this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
       responses:
         '200':
           description: OK
@@ -1569,6 +1575,12 @@ paths:
           type: integer
           format: int64
           minimum: 0
+        - name: after
+          description: Only results created after this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
       responses:
         '200':
           description: OK
@@ -1641,6 +1653,14 @@ paths:
           type: integer
           format: int64
           minimum: 0
+        - name: after
+          description: >-
+            Only check periods created after this UNIX timestamp will be
+            returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
       responses:
         '200':
           description: OK
@@ -1706,6 +1726,12 @@ paths:
           default: 25
         - name: before
           description: Only alerts triggered before this UNIX timestamp will be returned
+          in: query
+          type: integer
+          format: int64
+          minimum: 0
+        - name: after
+          description: Only alerts triggered after this UNIX timestamp will be returned
           in: query
           type: integer
           format: int64
