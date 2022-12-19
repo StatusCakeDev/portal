@@ -24,7 +24,7 @@ info:
     Documentation on input parameters, including how to pass arrays to API
     endpoints can be found
     [here](https://developers.statuscake.com/guides/api/parameters).
-  version: 1.0.0
+  version: 1.0.1
   termsOfService: https://www.statuscake.com/terms-and-conditions/
   contact:
     name: Support
@@ -1092,7 +1092,7 @@ paths:
               res, err := client.CreateSslTest(context.Background()).
                 WebsiteURL("https://www.example.com").
                 CheckRate(statuscake.SSLTestCheckRateThirtyMinutes).
-                AlertAt([]string{"1", "2", "3"}).
+                AlertAt([]int32{1, 2, 3}).
                 AlertBroken(true).
                 AlertExpiry(true).
                 AlertMixed(true).
@@ -1201,7 +1201,7 @@ paths:
 
               err := client.UpdateSslTest(context.Background(), "123").
                 CheckRate(statuscake.SSLTestCheckRateThirtyMinutes).
-                AlertAt([]string{"1", "2", "3"}).
+                AlertAt([]int32{1, 2, 3}).
                 AlertBroken(true).
                 AlertExpiry(true).
                 AlertMixed(true).
@@ -3616,7 +3616,6 @@ definitions:
           - '3'
         dns_ips: []
         do_not_find: false
-        down_times: 0
         enable_ssl_alert: true
         follow_redirects: false
         host: AWS
