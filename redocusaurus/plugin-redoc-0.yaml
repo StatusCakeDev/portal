@@ -2657,6 +2657,11 @@ definitions:
       name:
         description: Name of the check
         type: string
+      website_url:
+        description: URL, FQDN, or IP address of the website under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
       check_rate:
         $ref: '#/definitions/PagespeedTestCheckRate'
       alert_bigger:
@@ -3029,6 +3034,11 @@ definitions:
   SSLTestUpdateRequest:
     type: object
     properties:
+      website_url:
+        description: URL of the server under test. Must begin with https://
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
       check_rate:
         $ref: '#/definitions/SSLTestCheckRate'
       alert_at:
@@ -3667,6 +3677,11 @@ definitions:
       name:
         description: Name of the check
         type: string
+      website_url:
+        description: URL or IP address of the server under test
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
       check_rate:
         $ref: '#/definitions/UptimeTestCheckRate'
       basic_username:
