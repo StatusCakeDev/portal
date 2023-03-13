@@ -24,7 +24,7 @@ info:
     Documentation on input parameters, including how to pass arrays to API
     endpoints can be found
     [here](https://developers.statuscake.com/guides/api/parameters).
-  version: 1.0.1
+  version: 1.1.0
   termsOfService: https://www.statuscake.com/terms-and-conditions/
   contact:
     name: Support
