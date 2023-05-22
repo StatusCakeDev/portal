@@ -24,7 +24,7 @@ info:
     Documentation on input parameters, including how to pass arrays to API
     endpoints can be found
     [here](https://developers.statuscake.com/guides/api/parameters).
-  version: 1.1.0
+  version: 1.2.0
   termsOfService: https://www.statuscake.com/terms-and-conditions/
   contact:
     name: Support
@@ -46,6 +46,10 @@ tags:
     description: |
       The Contact Groups API provides methods to configure how StatusCake alerts
       are forwarded to the people that need to see them.
+  - name: heartbeat
+    description: |
+      The Heartbeat API provides methods to operate on heartbeat resources,
+      effectively allowing checks to be read and listed.
   - name: maintenance windows
     description: |
       The Maintenance Windows API provides methods to pause alerts from being
@@ -90,6 +94,7 @@ tags:
 x-tagGroups:
   - name: Features
     tags:
+      - heartbeat
       - pagespeed
       - ssl
       - uptime
@@ -367,6 +372,174 @@ paths:
                 panic(err)
               }
             }
+  /heartbeat:
+    get:
+      operationId: list-heartbeat-tests
+      summary: Get all heartbeat checks
+      description: Returns a list of heartbeat checks for an account.
+      tags:
+        - heartbeat
+      parameters:
+        - name: status
+          description: Heartbeat check status
+          in: query
+          type: string
+          enum:
+            - down
+            - up
+        - name: page
+          description: Page of results
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        - name: limit
+          description: The number of heartbeat checks to return per page
+          in: query
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 25
+        - name: tags
+          description: Comma separated list of tags assocaited with a check
+          in: query
+          type: string
+        - name: matchany
+          description: >-
+            Include heartbeat checks in response that match any specified tag or
+            all tags
+          in: query
+          type: boolean
+          default: false
+        - name: nouptime
+          description: Do not calculate uptime percentages for results
+          in: query
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeartbeatTests'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/heartbeat \
+              -H "Authorization: Bearer ${API_TOKEN}"
+    post:
+      operationId: create-heartbeat-test
+      summary: Create a heartbeat check
+      description: Creates a heartbeat check with the given parameters.
+      tags:
+        - heartbeat
+      parameters:
+        - name: create_heartbeat_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/HeartbeatTestCreateRequest'
+          required: true
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/APIResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X POST https://api.statuscake.com/v1/heartbeat \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example%20Heartbeat&period=1800"
+  /heartbeat/{test_id}:
+    get:
+      operationId: get-heartbeat-test
+      summary: Retrieve a heartbeat check
+      description: Returns a heartbeat check with the given id.
+      tags:
+        - heartbeat
+      parameters:
+        - name: test_id
+          description: Heartbeat check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeartbeatTestResponse'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.statuscake.com/v1/heartbeat/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
+    put:
+      operationId: update-heartbeat-test
+      summary: Update a heartbeat check
+      description: Updates a heartbeat check with the given parameters.
+      tags:
+        - heartbeat
+      parameters:
+        - name: test_id
+          description: Heartbeat check ID
+          in: path
+          type: string
+          required: true
+        - name: update_heartbeat_check_request
+          in: body
+          schema:
+            $ref: '#/definitions/HeartbeatTestUpdateRequest'
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X PUT https://api.statuscake.com/v1/heartbeat/123 \
+              -H "Authorization: Bearer ${API_TOKEN}" \
+              -d "name=Example%20Heartbeat&period=1800"
+    delete:
+      operationId: delete-heartbeat-test
+      summary: Delete a heartbeat check
+      description: Deletes a heartbeat check with the given id.
+      tags:
+        - heartbeat
+      parameters:
+        - name: test_id
+          description: Heartbeat check ID
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/APIError'
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl -X DELETE https://api.statuscake.com/v1/heartbeat/123 \
+              -H "Authorization: Bearer ${API_TOKEN}"
   /maintenance-windows:
     get:
       operationId: list-maintenance-windows
@@ -2116,6 +2289,242 @@ definitions:
         type: string
         format: uri
         x-export-param-name-override: PingURL
+  HeartbeatTests:
+    required:
+      - data
+      - metadata
+    type: object
+    properties:
+      data:
+        description: List of heartbeat checks
+        type: array
+        items:
+          $ref: '#/definitions/HeartbeatTestOverview'
+      metadata:
+        $ref: '#/definitions/Pagination'
+    example:
+      data:
+        - id: '123'
+          name: example Heartbeat check
+          url: https://push.statuscake.com/?PK=61e7ca9c88f06d0&TestID=123&time=0
+          period: 1800
+          contact_groups:
+            - '1'
+            - '2'
+            - '3'
+          paused: false
+          status: up
+          tags:
+            - tag1
+            - tag2
+          uptime: 99.9
+      metadata:
+        page: 1
+        per_page: 25
+        page_count: 10
+        total_count: 230
+  HeartbeatTest:
+    required:
+      - id
+      - name
+      - url
+      - period
+      - contact_groups
+      - paused
+      - status
+      - tags
+      - uptime
+    type: object
+    properties:
+      id:
+        description: Heartbeat check ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the check
+        type: string
+      url:
+        description: URL of the check
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      period:
+        description: >-
+          Number of seconds since the last ping before the check is considered
+          down
+        type: integer
+        format: int32
+        minimum: 30
+        maximum: 172800
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      host:
+        description: Name of the hosting provider
+        type: string
+      last_tested_at:
+        description: When the check was last run (RFC3339 format)
+        type: string
+        format: date-time
+        x-export-param-name-override: LastTested
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      status:
+        $ref: '#/definitions/HeartbeatTestStatus'
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      uptime:
+        description: Uptime percentage for a check
+        type: number
+        format: float
+        minimum: 0
+  HeartbeatTestCreateRequest:
+    required:
+      - name
+      - period
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      period:
+        description: >-
+          Number of seconds since the last ping before the check is considered
+          down
+        type: integer
+        format: int32
+        minimum: 30
+        maximum: 172800
+        default: 1800
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      host:
+        description: Name of the hosting provider
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+        default: false
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+  HeartbeatTestOverview:
+    required:
+      - id
+      - name
+      - url
+      - period
+      - contact_groups
+      - paused
+      - status
+      - tags
+    type: object
+    properties:
+      id:
+        description: Heartbeat check ID
+        type: string
+        x-export-param-name-override: ID
+      name:
+        description: Name of the check
+        type: string
+      url:
+        description: URL of the check
+        type: string
+        format: uri
+        x-export-param-name-override: WebsiteURL
+      period:
+        description: >-
+          Number of seconds since the last ping before the check is considered
+          down
+        type: integer
+        format: int32
+        minimum: 30
+        maximum: 172800
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      status:
+        $ref: '#/definitions/HeartbeatTestStatus'
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
+      uptime:
+        description: Uptime percentage for a check
+        type: number
+        format: float
+        minimum: 0
+  HeartbeatTestResponse:
+    required:
+      - data
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/HeartbeatTest'
+    example:
+      data:
+        id: '123'
+        name: example Heartbeat check
+        url: https://push.statuscake.com/?PK=61e7ca9c88f06d0&TestID=123&time=0
+        period: 1800
+        contact_groups:
+          - '1'
+          - '2'
+          - '3'
+        last_tested_at: '2013-01-20T14:38:18+00:00'
+        paused: false
+        status: up
+        tags:
+          - tag1
+          - tag2
+        uptime: 99.9
+  HeartbeatTestUpdateRequest:
+    type: object
+    properties:
+      name:
+        description: Name of the check
+        type: string
+      period:
+        description: >-
+          Number of seconds since the last ping before the check is considered
+          down
+        type: integer
+        format: int32
+        minimum: 30
+        maximum: 172800
+      contact_groups:
+        description: List of contact group IDs
+        type: array
+        items:
+          type: string
+      host:
+        description: Name of the hosting provider
+        type: string
+      paused:
+        description: Whether the check should be run
+        type: boolean
+      tags:
+        description: List of tags
+        type: array
+        items:
+          type: string
   MaintenanceWindows:
     required:
       - data
@@ -3792,6 +4201,18 @@ definitions:
       user_agent:
         description: Custom user agent string set when testing
         type: string
+  HeartbeatTestStatus:
+    description: The returned status of a heartbeat check
+    type: string
+    enum:
+      - down
+      - up
+    x-enum-descriptions:
+      - a heartbeat check with a down status
+      - a heartbeat check with an up status
+    x-enum-varnames:
+      - Down
+      - Up
   MaintenanceWindowRepeatInterval:
     description: How often the maintenance window should occur
     type: string
