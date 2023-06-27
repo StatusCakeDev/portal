@@ -85,7 +85,7 @@ const config = {
           editUrl: 'https://github.com/StatusCakeDev/portal/edit/master/',
         },
         gtag: {
-          trackingID: 'GTM-PD4P397',
+          trackingID: 'G-Q1H0RXRCRD',
           anonymizeIP: true,
         },
         theme: {
