@@ -16,13 +16,10 @@ export default function Home(): JSX.Element {
   const { hero, clients } = siteConfig.customFields as CustomFields;
 
   const tiggerEvent = (idx: number): void => {
-    if (typeof window.ga === 'function') {
-      window.ga('send', {
-        hitType: 'event',
-        eventCategory: 'developers',
-        eventAction: 'selected',
-        eventLabel: 'client',
-        eventValue: clients[idx].title,
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'select_content', {
+        content_type: 'Developer Client SDK',
+        content_id: clients[idx].title,
       });
     }
   }
