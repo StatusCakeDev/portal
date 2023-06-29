@@ -15,24 +15,12 @@ export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const { hero, clients } = siteConfig.customFields as CustomFields;
 
-  const tiggerEvent = (idx: number): void => {
-    if (typeof window.ga === 'function') {
-      window.ga('send', {
-        hitType: 'event',
-        eventCategory: 'developers',
-        eventAction: 'selected',
-        eventLabel: 'client',
-        eventValue: clients[idx].title,
-      });
-    }
-  }
-
   return (
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <Hero
           tagline={siteConfig.tagline}
           image={hero.image}>
-        <Tabs onSelected={tiggerEvent} tabs={clients} />
+        <Tabs tabs={clients} />
         <Link to="/guides/sdks/installation" className="button button--secondary button--hero button--quick">Quick Start</Link>
       </Hero>
       <main>
