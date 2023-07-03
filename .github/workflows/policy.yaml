@@ -6,7 +6,7 @@ on:
     branches:
     # This is run on merge queue branches as there are jobs listed in this
     # action that are often required in branch protection rules. Due to guards
-    # below certain jobs may not run in merge queue branched but will still
+    # below certain jobs may not run in merge queue branches but will still
     # return a status indicating a pass.
     - gh-readonly-queue/**
     - master
