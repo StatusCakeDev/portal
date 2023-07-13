@@ -33,7 +33,7 @@ jobs:
         ORG: StatusCakeDev
         REPO: openapi
         BRANCH: master
-        FILE_PATH: "api/statuscake/service/statuscake/openapi.yaml"
+        FILE_PATH: api/statuscake/service/statuscake/openapi.yaml
         GITHUB_TOKEN: ${{ secrets.MACHINE_TOKEN }}
     - name: Build website
       run: yarn build
