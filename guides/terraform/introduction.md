@@ -105,8 +105,8 @@ environment variable.
 
 If requests to the StatusCake API fail, the provider will attempt to retry the
 request up to a maximum of 3 times by default, after which the provider will
-report on the error returned from the API. The maximum number of attempts can
-be controlled from the provider configuration block.
+report on the error returned from the API. The maximum number of attempts can be
+controlled from the provider configuration block.
 
 ```hcl title=main.tf showLineNumbers {3}
 provider "statuscake" {
@@ -142,14 +142,14 @@ Request backoff may also be configured using the `STATUSCAKE_MIN_BACKOFF` and
 
 ### Request Throttling
 
-To help aliviate problems with API ratelimiting the provider throttles
+To help alleviate problems with API ratelimiting the provider throttles
 requests, placing a restriction on the maximum number of requests made per
 second. Whilst this value can be increased it may result in an increase of
 errors returned from the API.
 
-If the provider is returning too many errors relating to hitting ratelimits
-the requests per second can be lowered by configuring throttling within the
-provider configuration block.
+If the provider is returning too many errors relating to hitting ratelimits the
+requests per second can be lowered by configuring throttling within the provider
+configuration block.
 
 ```hcl title=main.tf showLineNumbers {3}
 provider "statuscake" {
@@ -160,8 +160,8 @@ provider "statuscake" {
 
 :::info
 
-Request throttling may also be configured using the `STATUSCAKE_RPS`
-environemnt variables.
+Request throttling may also be configured using the `STATUSCAKE_RPS` environemnt
+variables.
 
 :::
 
@@ -207,8 +207,8 @@ created.
 
 :::warning
 
-In a production environment you should not use `apply -auto-approve` as this
-can be dangerous. Instead create a plan with `terraform plan -out
-terraform.tfplan` followed by the command to apply the changes.
+In a production environment you should not use `apply -auto-approve` as this can
+be dangerous. Instead create a plan with `terraform plan -out terraform.tfplan`
+followed by the command to apply the changes.
 
 :::

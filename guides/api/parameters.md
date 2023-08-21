@@ -11,9 +11,9 @@ that must be made when interacting with these endpoints.
 ## Accept
 
 The `Accept` request HTTP header indicates which content types, expressed as
-MIME types, the client is able to understand. The StatusCake API is only
-capable of consuming data that has been URL encoded, meaning that the only
-viable `Accept` header be `application/x-www-form-urlencoded`.
+MIME types, the client is able to understand. The StatusCake API is only capable
+of consuming data that has been URL encoded, meaning that the only viable
+`Accept` header be `application/x-www-form-urlencoded`.
 
 ## Arrays
 

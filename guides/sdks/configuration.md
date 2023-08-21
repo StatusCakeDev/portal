@@ -85,9 +85,9 @@ opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
 
 ## Request Retries
 
-When a request results in a transient error - an error that will resolve
-itself, i.e. connection error, or rate limit being hit - it may be desirable to
-retry the request in the future. For this the SDKs allow for each request to be
+When a request results in a transient error - an error that will resolve itself,
+i.e. connection error, or rate limit being hit - it may be desirable to retry
+the request in the future. For this the SDKs allow for each request to be
 retired up to some maximum number of times to give thea greater chance for
 success.
 
@@ -179,7 +179,7 @@ func main() {
   </TabItem>
 </Tabs>
 
-# Next Steps
+## Next Steps
 
 Next learn about the different request retry backoff strategies the SDKs
 support.
