@@ -11,9 +11,9 @@ associated with your account.
 The documentation for the available endpoints along with their respective
 parameters, and responses may be found [here](/api).
 
-The remainder of this section focusses on ancillary documentation supporting
-the functionality of the API, concerned primarily with authentication,
-ratelimiting and error handling.
+The remainder of this section focusses on ancillary documentation supporting the
+functionality of the API, concerned primarily with authentication, ratelimiting
+and error handling.
 
 ## Next Steps
 

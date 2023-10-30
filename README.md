@@ -1,4 +1,4 @@
-# Portal [![test](https://github.com/StatusCakeDev/portal/actions/workflows/test.yaml/badge.svg)](https://github.com/StatusCakeDev/portal/actions/workflows/test.yaml)
+# Portal ![test](https://github.com/StatusCakeDev/portal/workflows/test/badge.svg?event=push)
 
 StatusCake developer portal built using [Docusaurus 2](https://docusaurus.io/),
 a modern static website generator.
@@ -7,23 +7,23 @@ a modern static website generator.
 
 You will need the following things properly installed on your computer.
 
-* [Git](https://git-scm.com/)
-* [Node.js](https://nodejs.org/en/)
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/en/)
 
 ## Installation
 
-* `git clone <repository-url>` this repository
-* `cd portal`
-* `yarn`
+- `git clone <repository-url>` this repository
+- `cd portal`
+- `yarn`
 
 ## Running / Development
 
-* `yarn start`
-* Visit your app at [http://localhost:3000](http://localhost:3000).
+- `yarn start`
+- Visit your app at [http://localhost:3000](http://localhost:3000).
 
 ### Building
 
-* `yarn build`
+- `yarn build`
 
 ## Deployment
 
@@ -34,5 +34,5 @@ tab.
 
 ## Further Reading / Useful Links
 
-* [Node.js](https://nodejs.org/en/)
-* [Docusaurus](https://docusaurus.io/)
+- [Node.js](https://nodejs.org/en/)
+- [Docusaurus](https://docusaurus.io/)

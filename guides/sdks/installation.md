@@ -55,9 +55,9 @@ bundle add statuscake-rb
 
 ## Create a Client
 
-Once the desired SDK(s) is installed the next step is to create an
-authenticated API client. You can view and manage your API tokens from the
-[StatusCake account panel](https://app.statuscake.com/User.php).
+Once the desired SDK(s) is installed the next step is to create an authenticated
+API client. You can view and manage your API tokens from the [StatusCake account
+panel](https://app.statuscake.com/User.php).
 
 :::warning note
 
@@ -129,9 +129,9 @@ opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
 
 ## List Uptime Checks
 
-With the API client configured you may make requests to the StatusCake API
-using the available methods. In this document we will list all uptime checks
-for the given workspace.
+With the API client configured you may make requests to the StatusCake API using
+the available methods. In this document we will list all uptime checks for the
+given workspace.
 
 <Tabs groupId="languages">
   <TabItem value="go" label="Go">

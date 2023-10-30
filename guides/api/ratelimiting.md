@@ -19,15 +19,15 @@ When the ratelimit quota is exceeded all future requests will return an HTTP
 
 ## Response Headers
 
-There are 3 HTTP response headers describing the state of the current
-ratelimits in effect. These are as follows:
+There are 3 HTTP response headers describing the state of the current ratelimits
+in effect. These are as follows:
 
 - `x-ratelimit-limit`
 - `x-ratelimit-remaining`
 - `x-ratelimit-reset`
 
-Each response will be returned with these headers - an example request may
-look like the following:
+Each response will be returned with these headers - an example request may look
+like the following:
 
 ```bash title="Example response"
 HTTP/2 200
@@ -41,9 +41,9 @@ The response may be understood from the following sections.
 
 ### x-ratelimit-limit
 
-This response header describe the ratelimit being applied to the request. In
-the example above we can see the value of this header is `5, 60;w=60, 5;w=1`.
-What this is telling us is that:
+This response header describe the ratelimit being applied to the request. In the
+example above we can see the value of this header is `5, 60;w=60, 5;w=1`.  What
+this is telling us is that:
 
 - The first 5 indicates what ratelimit is currently being applied - that of 5
   rps,
@@ -57,12 +57,12 @@ ratelimit has been reached. When this number returns 0 it indicates that all
 subsequent requests will be limited and that the API will return an HTTP status
 code of `429` until the ratelimit window is reset.
 
-Because users operating from accounts without a subscription are limited by
-both a 5 rps ratelimit and a 60 rpm ratelimit it is difficult to determine how
-many more request can be made within the current minute as this HTTP response
-header only returns information regarding the 5 rps ratelimit (because it take
-higher priority). Therefore it is imperative that all applications consuming
-the StatusCake API keep track of the number of calls being made. This may be
+Because users operating from accounts without a subscription are limited by both
+a 5 rps ratelimit and a 60 rpm ratelimit it is difficult to determine how many
+more request can be made within the current minute as this HTTP response header
+only returns information regarding the 5 rps ratelimit (because it take higher
+priority). Therefore it is imperative that all applications consuming the
+StatusCake API keep track of the number of calls being made. This may be
 accomplished with some sort of debounce functionality. However it will be
 evident when the 60 rpm ratelimit has been reached because:
 
