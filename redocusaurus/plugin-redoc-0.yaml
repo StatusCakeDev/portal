@@ -407,14 +407,19 @@ paths:
           in: query
           type: string
         - name: matchany
-          description: >-
+          description: |-
             Include heartbeat checks in response that match any specified tag or
-            all tags
+            all tags. This parameter does not take a value. The absence of this
+            paratemer equates to `false` whilst the presence of thie paramerter
+            equates to `true`.
           in: query
           type: boolean
           default: false
         - name: nouptime
-          description: Do not calculate uptime percentages for results
+          description: |-
+            Do not calculate uptime percentages for results. This parameter does
+            not take a value. The absence of this paratemer equates to `false`
+            whilst the presence of thie paramerter equates to `true`.
           in: query
           type: boolean
           default: false
@@ -432,6 +437,29 @@ paths:
           source: |
             curl https://api.statuscake.com/v1/heartbeat \
               -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.ListHeartbeatTests(context.Background()).Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
     post:
       operationId: create-heartbeat-test
       summary: Create a heartbeat check
@@ -459,6 +487,32 @@ paths:
             curl -X POST https://api.statuscake.com/v1/heartbeat \
               -H "Authorization: Bearer ${API_TOKEN}" \
               -d "name=Example%20Heartbeat&period=1800"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.CreateHeartbeatTest(context.Background()).
+                Name("Example Heartbeat").
+                Period(1800).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data.NewID)
+            }
   /heartbeat/{test_id}:
     get:
       operationId: get-heartbeat-test
@@ -486,6 +540,29 @@ paths:
           source: |
             curl https://api.statuscake.com/v1/heartbeat/123 \
               -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+              "fmt"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              res, err := client.GetHeartbeatTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+
+              fmt.Printf("%+v\n", res.Data)
+            }
     put:
       operationId: update-heartbeat-test
       summary: Update a heartbeat check
@@ -516,6 +593,29 @@ paths:
             curl -X PUT https://api.statuscake.com/v1/heartbeat/123 \
               -H "Authorization: Bearer ${API_TOKEN}" \
               -d "name=Example%20Heartbeat&period=1800"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.UpdateHeartbeatTest(context.Background(), "123").
+                Name("Example HTTP").
+                Period(1800).
+                Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
     delete:
       operationId: delete-heartbeat-test
       summary: Delete a heartbeat check
@@ -540,6 +640,26 @@ paths:
           source: |
             curl -X DELETE https://api.statuscake.com/v1/heartbeat/123 \
               -H "Authorization: Bearer ${API_TOKEN}"
+        - lang: Go
+          source: |
+            package main
+
+            import (
+              "context"
+
+              "github.com/StatusCakeDev/statuscake-go"
+              "github.com/StatusCakeDev/statuscake-go/credentials"
+            )
+
+            func main() {
+              bearer := credentials.NewBearerWithStaticToken("my-api-token")
+              client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
+
+              err := client.DeletHeartbeatTest(context.Background(), "123").Execute()
+              if err != nil {
+                panic(err)
+              }
+            }
   /maintenance-windows:
     get:
       operationId: list-maintenance-windows
@@ -1465,12 +1585,21 @@ paths:
         - name: matchany
           description: >-
             Include uptime checks in response that match any specified tag or
-            all tags
+            all
+
+            tags. This parameter does not take a value. The absence of this
+
+            paratemer equates to `false` whilst the presence of thie paramerter
+
+            equates to `true`.
           in: query
           type: boolean
           default: false
         - name: nouptime
-          description: Do not calculate uptime percentages for results
+          description: |-
+            Do not calculate uptime percentages for results. This parameter does
+            not take a value. The absence of this paratemer equates to `false`
+            whilst the presence of thie paramerter equates to `true`.
           in: query
           type: boolean
           default: false
@@ -2347,7 +2476,6 @@ definitions:
         description: URL of the check
         type: string
         format: uri
-        x-export-param-name-override: WebsiteURL
       period:
         description: >-
           Number of seconds since the last ping before the check is considered
@@ -2442,7 +2570,6 @@ definitions:
         description: URL of the check
         type: string
         format: uri
-        x-export-param-name-override: WebsiteURL
       period:
         description: >-
           Number of seconds since the last ping before the check is considered
