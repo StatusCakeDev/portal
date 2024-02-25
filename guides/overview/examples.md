@@ -35,6 +35,7 @@ list of interesting projects that may be useful to others.
 - [ansible-statuscake](https://github.com/labynocle/ansible-statuscake)
 - [statuscake-push-client](https://github.com/vparpoil/status-cake-push-client)
 - [statuscake-exporter](https://github.com/chelnak/status-cake-exporter)
+- [status-cake-exporter](https://github.com/chelnak/status-cake-exporter)
 
 ### Guides
 
