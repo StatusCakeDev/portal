@@ -5,6 +5,8 @@ ignore: |
   node_modules/
   src/spec/
 rules:
+  document-start:
+    level: error
   indentation:
     indent-sequences: false
     spaces: 2
