@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  title: "Dummy API"
+  title: Dummy API
   description: |
     This is a dummy API schema document. To render the schema available in
     production replace `src/spec/openapi.yaml` with the file found
