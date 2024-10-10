@@ -247,7 +247,7 @@ paths:
       x-codeSamples:
         - lang: cURL
           source: |
-            curl -X POST https://api.statuscake.com/v1/contact-groups/123 \
+            curl https://api.statuscake.com/v1/contact-groups/123 \
               -H "Authorization: Bearer ${API_TOKEN}"
         - lang: Go
           source: |
