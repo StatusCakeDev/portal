@@ -18,7 +18,7 @@ language:
 
 Some SDK are currently in alpha and will not be given support at this time. We
 are currently working to deliver stable releases for each of these projects.
-Read more about alpha releases [here](/guides/sdks/alpha).
+Read more about alpha releases in the [documentation](/guides/sdks/alpha).
 
 :::
 
