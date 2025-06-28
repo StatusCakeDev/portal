@@ -12,7 +12,8 @@ the Terraform provider and create an uptime check.
 :::caution note
 
 It is assumed you are already familiar with Terraform and have it installed. If
-not check out this [link](https://www.terraform.io/downloads) to get started.
+not check out the [installation page](https://www.terraform.io/downloads) to get
+started.
 
 :::
 
