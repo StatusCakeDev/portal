@@ -8,8 +8,8 @@ The StatusCake API is organised around the features that we offer, with each
 feature providing a set of endpoints to perform operations on resources
 associated with your account.
 
-The documentation for the available endpoints along with their respective
-parameters, and responses may be found [here](/api).
+Available endpoints along with their respective parameters, and responses may be
+found within our [API documentation](/api).
 
 The remainder of this section focusses on ancillary documentation supporting the
 functionality of the API, concerned primarily with authentication, ratelimiting
