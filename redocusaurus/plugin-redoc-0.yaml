@@ -2708,14 +2708,30 @@ definitions:
         description: Name of the maintenance window
         type: string
       end_at:
-        description: End of the maintenance window (RFC3339 format)
+        description: |-
+          End of the maintenance window (RFC3339 format). Only the date and time
+          components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: End
       repeat_interval:
         $ref: '#/definitions/MaintenanceWindowRepeatInterval'
       start_at:
-        description: Start of the maintenance window (RFC3339 format)
+        description: |-
+          Start of the maintenance window (RFC3339 format). Only the date and
+          time components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: Start
@@ -2753,14 +2769,30 @@ definitions:
         description: Name of the maintenance window
         type: string
       end_at:
-        description: End of the maintenance window (RFC3339 format)
+        description: |-
+          End of the maintenance window (RFC3339 format). Only the date and time
+          components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: End
       repeat_interval:
         $ref: '#/definitions/MaintenanceWindowRepeatInterval'
       start_at:
-        description: Start of the maintenance window (RFC3339 format)
+        description: |-
+          Start of the maintenance window (RFC3339 format). Only the date and
+          time components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: Start
@@ -2817,14 +2849,30 @@ definitions:
         description: Name of the maintenance window
         type: string
       end_at:
-        description: End of the maintenance window (RFC3339 format)
+        description: |-
+          End of the maintenance window (RFC3339 format). Only the date and time
+          components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: End
       repeat_interval:
         $ref: '#/definitions/MaintenanceWindowRepeatInterval'
       start_at:
-        description: Start of the maintenance window (RFC3339 format)
+        description: |-
+          Start of the maintenance window (RFC3339 format). Only the date and
+          time components are used - the UTC offset is ignored. The time is
+          interpreted as local time in the timezone specified by the `timezone`
+          field.
+
+          When `repeat_interval` is not `never`, the date component determines
+          the first occurrence only; subsequent windows repeat at the same local
+          time.
         type: string
         format: date-time
         x-export-param-name-override: Start
