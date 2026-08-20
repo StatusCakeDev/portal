@@ -15,3 +15,4 @@ jobs:
     with:
       enable-merge-commit-check: ${{ github.event_name == 'pull_request_target' }}
       enable-commit-message-check: ${{ github.event_name == 'pull_request_target' }}
+      markdown-args: -e guides
