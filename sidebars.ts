@@ -74,6 +74,20 @@ const sidebars: SidebarsConfig = {
         'terraform/troubleshooting',
       ],
     },
+    {
+      type: 'category',
+      label: 'MCP',
+      items: [
+        'mcp/introduction',
+        'mcp/installation',
+        'mcp/clients',
+        'mcp/tools',
+        'mcp/using',
+        'mcp/configuration',
+        'mcp/security',
+        'mcp/troubleshooting',
+      ],
+    },
   ],
 };
 

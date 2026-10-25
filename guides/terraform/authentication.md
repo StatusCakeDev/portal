@@ -33,8 +33,9 @@ terraform plan
 ```
 
 `STATUSCAKE_API_TOKEN` is the variable used by the other StatusCake tools, so
-one variable can serve the [CLI](/guides/cli/authentication), and the
-[SDKs](/guides/sdks/authentication), too. In a continuous integration system,
+one variable can serve the [CLI](/guides/cli/authentication), the
+[SDKs](/guides/sdks/authentication), and the [MCP
+server](/guides/mcp/configuration) too. In a continuous integration system,
 store the token as a secret and expose it only to the step that runs Terraform.
 
 ## Using a variable

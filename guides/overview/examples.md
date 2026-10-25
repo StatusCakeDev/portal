@@ -32,6 +32,7 @@ Each tool has its own set of guides, which include worked examples.
 - [Getting started with the Go SDK](/guides/sdks/quickstart)
 - [Getting started with the Terraform provider](/guides/terraform/quickstart)
 - [Scripting with the command line](/guides/cli/scripting)
+- [Asking an AI assistant about your monitoring](/guides/mcp/using)
 
 ## Community
 

@@ -34,6 +34,11 @@ const features = [
     to: '/guides/terraform/introduction',
   },
   {
+    title: 'MCP',
+    description: 'Let an AI assistant answer questions about your monitoring, read-only.',
+    to: '/guides/mcp/introduction',
+  },
+  {
     title: 'Examples',
     description: 'Learn from the StatusCake team how best to enrich your monitoring capabilities.',
     to: '/guides/examples',

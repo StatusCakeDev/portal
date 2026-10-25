@@ -51,9 +51,10 @@ curl "https://api.statuscake.com/v1/uptime" \
 ```
 
 `STATUSCAKE_API_TOKEN` is also the variable that the
-[SDKs](/guides/sdks/authentication), the [CLI](/guides/cli/authentication), and
-the [Terraform provider](/guides/terraform/authentication) read, so a single
-variable can serve every tool in a pipeline.
+[SDKs](/guides/sdks/authentication), the [CLI](/guides/cli/authentication), the
+[Terraform provider](/guides/terraform/authentication), and the [MCP
+server](/guides/mcp/configuration) read, so a single variable can serve every
+tool in a pipeline.
 
 In a continuous integration system, store the token as a secret and expose it to
 the steps that need it, rather than to the whole job.

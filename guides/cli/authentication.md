@@ -37,8 +37,9 @@ $ cakectl uptime list
 
 `STATUSCAKE_API_TOKEN` is the variable used by the other StatusCake tools, so
 one variable can serve the CLI, and the [Terraform
-provider](/guides/terraform/authentication). This is the right choice in a
-script or a CI job, where the token should come from your secret store.
+provider](/guides/terraform/authentication), and the [MCP
+server](/guides/mcp/configuration). This is the right choice in a script or a CI
+job, where the token should come from your secret store.
 
 ## Saving the token
 
