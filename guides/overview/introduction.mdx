@@ -6,26 +6,50 @@ slug: /
 hide_table_of_contents: true
 ---
 
-import DocCard from '@theme/DocCard';
+import DocCardList from '@theme/DocCardList';
 import DocClients from '@site/src/components/DocClients';
-import Cards from '@site/src/components/Cards';
 
 StatusCake is a website monitoring platform with a focus on providing
 observability for the applications you maintain. Here you will find developer
 documentation to help integrate StatusCake into your own monitoring suites.
 
 Create an [uptime check](https://app.statuscake.com/AddSite.php) or use our API
-to automate your experience
+to automate your experience.
+
+## Choose a tool
+
+There are several ways to work with StatusCake programmatically. Which suits you
+depends on what you are doing.
+
+| If you want to | Use |
+| --- | --- |
+| Build StatusCake into your own software | The [Go SDK](/guides/sdks/introduction), or the [API](/guides/api/introduction) directly |
+| Keep your monitoring in version control alongside your infrastructure | The [Terraform provider](/guides/terraform/introduction) |
 
 ## API Documentation
 
-<Cards>
-  <DocCard item={{ type: 'link', label: 'Authentication', href: '/guides/api/authentication', docId: 'api/authentication' }} />
-  <DocCard item={{ type: 'link', label: 'Ratelimiting', href: '/guides/api/ratelimiting', docId: 'api/ratelimiting' }} />
-  <DocCard item={{ type: 'link', label: 'Error Handling', href: '/guides/api/errors', docId: 'api/errors' }} />
-  <DocCard item={{ type: 'link', label: 'Parameters', href: '/guides/api/parameters', docId: 'api/parameters' }} />
-</Cards>
+The API is the foundation that everything else is built on.
+
+<DocCardList
+  items={[
+    { type: 'link', label: 'Introduction', href: '/guides/api/introduction' },
+    { type: 'link', label: 'Authentication', href: '/guides/api/authentication' },
+    { type: 'link', label: 'Resources', href: '/guides/api/resources' },
+    { type: 'link', label: 'Pagination', href: '/guides/api/pagination' },
+    { type: 'link', label: 'Parameters', href: '/guides/api/parameters' },
+    { type: 'link', label: 'Ratelimiting', href: '/guides/api/ratelimiting' },
+    { type: 'link', label: 'Error Handling', href: '/guides/api/errors' },
+  ]}
+/>
 
 ## Begin with an SDK
 
 <DocClients />
+
+## Tools
+
+<DocCardList
+  items={[
+    { type: 'link', label: 'Terraform', href: '/guides/terraform/introduction' },
+  ]}
+/>

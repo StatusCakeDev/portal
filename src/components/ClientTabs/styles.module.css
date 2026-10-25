@@ -1,0 +1,28 @@
+.container {
+  margin: 1rem 0;
+  max-width: 32rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.tabs {
+  justify-content: center;
+}
+
+.tab {
+  align-items: center;
+  border-bottom-width: 3px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  min-width: 72px;
+  padding: 8px;
+}
+
+.tab::before {
+  background: var(--tab-icon) center / contain no-repeat;
+  content: '';
+  height: 2.5rem;
+  margin-bottom: 8px;
+  width: 2.5rem;
+}
