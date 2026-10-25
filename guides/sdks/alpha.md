@@ -41,6 +41,8 @@ that keep the rest of your code unchanged:
 - Call the [API](/guides/api/introduction) directly for that one operation,
   using the HTTP client you already have. [Parameters](/guides/api/parameters)
   describes how to send arrays correctly.
+- Use the [CLI](/guides/cli/introduction) from your script for that one
+  operation.
 
 ## Giving feedback
 

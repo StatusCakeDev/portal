@@ -46,8 +46,9 @@ that pauses checks while it works, or a report that reads uptime into your own
 systems.
 
 If you are describing monitoring as configuration, the [Terraform
-provider](/guides/terraform/introduction) is usually a better fit. If your
-language has no SDK, call the [API](/guides/api/introduction) directly.
+provider](/guides/terraform/introduction) is usually a better fit. For
+one-off tasks and shell scripts, use the [CLI](/guides/cli/introduction). If
+your language has no SDK, call the [API](/guides/api/introduction) directly.
 
 ## How these guides are organised
 

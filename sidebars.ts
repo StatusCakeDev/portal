@@ -45,6 +45,16 @@ const sidebars: SidebarsConfig = {
       label: 'CLI',
       items: [
         'cli/introduction',
+        'cli/installation',
+        'cli/authentication',
+        'cli/configuration',
+        'cli/managing-resources',
+        'cli/uptime-checks',
+        'cli/other-checks',
+        'cli/alerting',
+        'cli/results',
+        'cli/scripting',
+        'cli/troubleshooting',
       ],
     },
     {
