@@ -40,7 +40,7 @@ const features = [
   },
 ];
 
-export default function Home(): JSX.Element {
+export default function Home(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const { hero } = siteConfig.customFields as CustomFields;
 

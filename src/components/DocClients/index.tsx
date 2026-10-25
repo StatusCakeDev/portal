@@ -7,7 +7,7 @@ import { CustomFields } from '@site/src/types';
 /**
  * Lists the SDKs configured in `customFields.clients` as documentation cards.
  */
-export default function DocClients(): JSX.Element {
+export default function DocClients(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const { clients } = siteConfig.customFields as CustomFields;
 

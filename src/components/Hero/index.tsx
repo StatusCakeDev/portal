@@ -13,7 +13,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function Hero(props: Props): JSX.Element {
+export default function Hero(props: Props): React.JSX.Element {
   const { title, tagline, image, children } = props;
 
   if (typeof title === 'undefined' && typeof image === 'undefined') {
