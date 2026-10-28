@@ -13,7 +13,7 @@ import styles from './styles.module.css';
  * those used in the SDK guides, so choosing a language here is remembered
  * there.
  */
-export default function ClientTabs(): JSX.Element {
+export default function ClientTabs(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const { clients } = siteConfig.customFields as CustomFields;
 

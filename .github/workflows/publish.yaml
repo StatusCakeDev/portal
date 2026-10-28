@@ -18,12 +18,13 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - uses: actions/checkout@v7
+    - uses: pnpm/action-setup@v6
     - uses: actions/setup-node@v7
       with:
         node-version-file: .node-version
-        cache: yarn
+        cache: pnpm
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: pnpm install --frozen-lockfile
     - name: Fetch API documentation
       run: |
         curl -SsL "https://raw.githubusercontent.com/${ORG}/${REPO}/${BRANCH}/${FILE_PATH}" \
@@ -36,7 +37,7 @@ jobs:
         FILE_PATH: api/statuscake/service/statuscake/openapi.yaml
         GITHUB_TOKEN: ${{ secrets.MACHINE_TOKEN }}
     - name: Build website
-      run: yarn build
+      run: pnpm build
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
