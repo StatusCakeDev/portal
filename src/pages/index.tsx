@@ -3,55 +3,67 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 
-import Card from '@site/src/components/Card';
-import Cards from '@site/src/components/Cards';
+import clsx from 'clsx';
+
+import ClientTabs from '@site/src/components/ClientTabs';
 import Hero from '@site/src/components/Hero';
-import Image from '@site/src/components/Image';
-import Tabs from '@site/src/components/Tabs';
 
 import { CustomFields } from '@site/src/types';
 
+import styles from './index.module.css';
+
+const features = [
+  {
+    title: 'API',
+    description: 'Take advantage of our API to create monitoring suites for your own websites.',
+    to: '/api',
+  },
+  {
+    title: 'CLI',
+    description: 'Manage StatusCake monitoring resources without leaving the terminal.',
+    to: '/guides/cli/introduction',
+  },
+  {
+    title: 'SDKs',
+    description: 'Use familiar languages to control how your StatusCake monitoring resources work for you.',
+    to: '/guides/sdks/introduction',
+  },
+  {
+    title: 'Terraform',
+    description: 'Declare your StatusCake monitoring resources with tools designed to manage large infrastructures.',
+    to: '/guides/terraform/introduction',
+  },
+  {
+    title: 'Examples',
+    description: 'Learn from the StatusCake team how best to enrich your monitoring capabilities.',
+    to: '/guides/examples',
+  },
+];
+
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
-  const { hero, clients } = siteConfig.customFields as CustomFields;
+  const { hero } = siteConfig.customFields as CustomFields;
 
   return (
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <Hero
-          tagline={siteConfig.tagline}
-          image={hero.image}>
-        <Tabs tabs={clients} />
-        <Link to="/guides/sdks/installation" className="button button--secondary button--hero button--quick">Quick Start</Link>
+        tagline={siteConfig.tagline}
+        image={hero.image}>
+        <ClientTabs />
+        <Link to="/guides/sdks/quickstart" className="button button--secondary button--hero button--quick">Quick Start</Link>
       </Hero>
       <main>
         <section className="hero">
           <div className="container">
-            <Cards>
-              <Card title="API">
-                <p>Take advantage of our API to create monitoring suites for you own websites.</p>
-                <Link to="/api" className="button button--primary">Learn More</Link>
-              </Card>
-              <Card title="CLI">
-                <p>Manage StatusCake monitoring resources without leaving the terminal.</p>
-                <button className="button button--primary">Coming Soon</button>
-              </Card>
-              <Card title="SDKs">
-                <p>Use familiar languages to control how your StatusCake monitoring resources work for you.</p>
-                <Link to="/guides/sdks/introduction" className="button button--primary">Learn More</Link>
-              </Card>
-              <Card title="Terraform">
-                <p>Declare your StatusCake monitoring resources with tools designed to manage large infrastructures.</p>
-                <Link to="/guides/terraform/introduction" className="button button--primary">Learn More</Link>
-              </Card>
-              <Card title="Examples">
-                <p>Learn from the StatusCake team how best to enrich you monitoring capabilities.</p>
-                <Link to="/guides/examples" className="button button--primary">Learn More</Link>
-              </Card>
-              <Card title="Community">
-                <p>Use open source projects developed by our ever growing community.</p>
-                <Link to="/guides/examples#community" className="button button--primary">Learn More</Link>
-              </Card>
-            </Cards>
+            <div className={styles.cards}>
+              {features.map((feature) => (
+                <div className={clsx('card', styles.card)} key={feature.title}>
+                  <h2>{feature.title}</h2>
+                  <p>{feature.description}</p>
+                  <Link to={feature.to} className="button button--primary">Learn More</Link>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
         <section className="hero hero--dark">
@@ -62,10 +74,10 @@ export default function Home(): JSX.Element {
                 <h2>Introducing cakectl</h2>
                 <p>The StatusCake command-line application that lets you manage your monitoring resources without leaving the terminal.</p>
                 <p>Available on Windows, Linux and macOS</p>
-                <button className="button button--primary">Coming Soon</button>
+                <Link to="/guides/cli/introduction" className="button button--primary">Learn More</Link>
               </div>
               <div className="featured-image">
-                <Image src="/img/index/cakectl.svg" alt="cakectl" />
+                <img src="/img/index/cakectl.svg" alt="cakectl" />
               </div>
             </div>
           </div>

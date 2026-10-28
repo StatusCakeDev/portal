@@ -6,6 +6,16 @@
   padding: 2rem 0;
 }
 
+.card {
+  align-items: flex-start;
+  background-color: var(--ifm-code-background);
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
 @media (min-width: 997px) {
   .cards {
     grid-template-columns: repeat(2, 1fr);

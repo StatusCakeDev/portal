@@ -41,9 +41,9 @@ The response may be understood from the following sections.
 
 ### x-ratelimit-limit
 
-This response header describe the ratelimit being applied to the request. In the
-example above we can see the value of this header is `5, 60;w=60, 5;w=1`.  What
-this is telling us is that:
+This response header describes the ratelimit being applied to the request. In
+the example above we can see the value of this header is `5, 60;w=60, 5;w=1`.
+What this is telling us is that:
 
 - The first 5 indicates what ratelimit is currently being applied - that of 5
   rps,
@@ -59,8 +59,8 @@ code of `429` until the ratelimit window is reset.
 
 Because users operating from accounts without a subscription are limited by both
 a 5 rps ratelimit and a 60 rpm ratelimit it is difficult to determine how many
-more request can be made within the current minute as this HTTP response header
-only returns information regarding the 5 rps ratelimit (because it take higher
+more requests can be made within the current minute as this HTTP response header
+only returns information regarding the 5 rps ratelimit (because it takes higher
 priority). Therefore it is imperative that all applications consuming the
 StatusCake API keep track of the number of calls being made. This may be
 accomplished with some sort of debounce functionality. However it will be
@@ -73,8 +73,53 @@ evident when the 60 rpm ratelimit has been reached because:
 ### x-ratelimit-reset
 
 This response header displays the time remaining, in seconds, until the
-ratelimint currently being enforced is no longer in effect. This header is most
+ratelimit currently being enforced is no longer in effect. This header is most
 useful for applying a client side ratelimiting strategy.
+
+## Handling a 429
+
+A `429` is not a failure of the request, only of its timing: the same request
+made later will succeed. The right response is to wait and try again, using
+`x-ratelimit-reset` to decide how long to wait.
+
+```bash title="Retry when ratelimited" showLineNumbers
+request() {
+  while true; do
+    headers=$(mktemp)
+    body=$(curl -s -D "$headers" "$@" \
+      -H "Authorization: Bearer $STATUSCAKE_API_TOKEN")
+
+    if grep -qi '^HTTP/[0-9.]* 429' "$headers"; then
+      wait=$(awk -F': ' 'tolower($1) == "x-ratelimit-reset" { print int($2) }' "$headers")
+      sleep "${wait:-1}"
+      continue
+    fi
+
+    echo "$body"
+    return
+  done
+}
+
+request "https://api.statuscake.com/v1/uptime"
+```
+
+A loop that retries without limit can run forever if something else is wrong, so
+real code should give up after a number of attempts.
+
+## Staying Under the Limit
+
+The cheapest request is the one you do not make. A few habits help:
+
+- Throttle your own requests to a little under 5 per second, rather than relying
+  on the API to turn you away. The [SDKs](/guides/sdks/configuration), and the
+  [Terraform provider](/guides/terraform/configuration) all do this with an
+  `rps` setting, which defaults to `4`.
+- Retrieve a resource by its identifier when you need one, rather than listing
+  and searching.
+- Use a larger page `limit` and narrow time windows. See
+  [Pagination](/guides/api/pagination).
+- Remember that the quota is shared by everything using the account. A pipeline
+  that runs while a dashboard refreshes is competing with it.
 
 ## Next Steps
 

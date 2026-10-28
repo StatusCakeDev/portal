@@ -9,7 +9,19 @@ import TabItem from '@theme/TabItem';
 
 When a request fails it may be desirable to retry the request in the future.
 For this the SDKs employ a couple of strategies to give the best chance of a
-successful request.
+successful request. A strategy decides how long to wait before each retry, and
+you choose one with the `WithBackoff` option described in
+[Configuration](/guides/sdks/configuration).
+
+| Strategy | Wait before retry | Best for |
+| --- | --- | --- |
+| Constant | The same every time. | Short outages, and predictable timing. |
+| Linear | Grows by the base delay each time. | A gentle increase. |
+| Exponential | Multiplies each time. | Giving a struggling service room to recover. |
+
+Exponential backoff is the usual choice when many clients might retry at once,
+since it spreads them out. Add jitter in that case, so that clients that failed
+together do not all retry together.
 
 ## Constant Backoff
 
@@ -81,7 +93,7 @@ func main() {
 
 ## Linear Backoff
 
-Linear backoff applies a linear functions on the time between each failed
+Linear backoff applies a linear function on the time between each failed
 request.
 
 <Tabs groupId="languages">
@@ -113,3 +125,25 @@ func main() {
 
   </TabItem>
 </Tabs>
+
+## Choosing Delays
+
+The period a strategy waits is the time the request is held up, so it should be
+shorter than any deadline you give the request's context. With
+`WithMaxRetries(3)` and an exponential strategy that starts at 1 second and
+doubles, a request that keeps failing waits for roughly 1, 2 and 4 seconds
+before it gives up, so a deadline shorter than about seven seconds will be hit
+first.
+
+`MaxDelay` caps the wait however many retries are made. Set it on both the
+exponential and linear strategies: a `MaxDelay` of zero, which is what you get
+by leaving it out, caps every wait at zero and so removes the backoff entirely.
+
+`Jitter` is a fraction by which each wait may vary either way, so `0.2` varies
+it by up to 20% shorter or longer. Jitter is not applied to the first retry of
+an exponential strategy.
+
+## Next Steps
+
+Return to [Configuration](/guides/sdks/configuration) for the other client
+options.

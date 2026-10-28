@@ -130,13 +130,6 @@ const config = {
         apiKey: 'f1d6dae27a5ebf65d6eca2de77ea4d22',
         indexName: 'statuscake',
       },
-      announcementBar: {
-        id: 'survey',
-        content: 'We are looking to improve our docs, please fill <a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSf6YdcflYefzuAswHs9VpSj29VQH1a7vqEnD6I9vmI47dwH5Q/viewform?usp=sf_link">this survey</a>',
-        backgroundColor: '#fafbfc',
-        textColor: '#091E42',
-        isCloseable: true,
-      },
       colorMode: {
         defaultMode: 'light',
         disableSwitch: false,
@@ -150,19 +143,24 @@ const config = {
       footer: {
         copyright: `Copyright © ${new Date().getFullYear()} StatusCake. Built with <a target="_blank" rel="noopener noreferer" href="https://docusaurus.io/">Docusaurus</a> and <a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">Redocly</a>.`,
         links: [
-          { title: 'Documentation', items: [
-            { label: 'Guides', to: '/guides' },
-          ]},
-          { title: 'Community', items: [
-            { href: 'https://github.com/StatusCakeDev', label: 'GitHub' },
-            { href: 'https://stackoverflow.com/questions/tagged/statuscake', label: 'Stack Overflow' },
-            { href: 'https://www.linkedin.com/company/statuscake/', label: 'LinkedIn' },
-            { href: 'https://twitter.com/statuscaketeam', label: 'Twitter' },
-          ]},
-          { title: 'More', items: [
-            { href: 'https://www.statuscake.com/blog', label: 'Blog' },
-            { href: 'https://www.statuscake.com/join-the-team/', label: 'Careers', position: 'left' },
-          ]},
+          {
+            title: 'Documentation', items: [
+              { label: 'Guides', to: '/guides' },
+            ]
+          },
+          {
+            title: 'Community', items: [
+              { href: 'https://github.com/StatusCakeDev', label: 'GitHub' },
+              { href: 'https://stackoverflow.com/questions/tagged/statuscake', label: 'Stack Overflow' },
+              { href: 'https://www.linkedin.com/company/statuscake/', label: 'LinkedIn' },
+            ]
+          },
+          {
+            title: 'More', items: [
+              { href: 'https://www.statuscake.com/blog', label: 'Blog' },
+              { href: 'https://www.statuscake.com/join-the-team/', label: 'Careers', position: 'left' },
+            ]
+          },
         ],
       },
       navbar: {

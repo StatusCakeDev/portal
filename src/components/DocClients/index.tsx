@@ -1,21 +1,22 @@
 import React from 'react';
-import clsx from 'clsx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import DocCard from '@theme/DocCard';
-import Cards from '@site/src/components/Cards';
+import DocCardList from '@theme/DocCardList';
 
-import { Client } from '@site/src/types';
+import { CustomFields } from '@site/src/types';
 
+/**
+ * Lists the SDKs configured in `customFields.clients` as documentation cards.
+ */
 export default function DocClients(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
-  const clients = siteConfig.customFields.clients as Array<Client>;
+  const { clients } = siteConfig.customFields as CustomFields;
+
   return (
-    <Cards>
-      {clients.map((client) => (
-        <DocCard
-          item={{ type: 'link', label: client.title, href: client.href }}
-          key={client.title} />
-      ))}
-    </Cards>
+    <DocCardList
+      items={clients.map((client) => ({
+        type: 'link',
+        label: client.title,
+        href: client.href,
+      }))} />
   );
 }

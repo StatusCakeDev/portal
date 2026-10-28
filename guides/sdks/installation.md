@@ -1,7 +1,7 @@
 ---
 id: installation
 title: Installation
-description: Learn how to get started using StatusCake software development kits
+description: Learn how to install the StatusCake software development kits
 ---
 
 import Tabs from '@theme/Tabs';
@@ -16,7 +16,7 @@ language:
 
 :::info
 
-Some SDK are currently in alpha and will not be given support at this time. We
+Some SDKs are currently in alpha and will not be given support at this time. We
 are currently working to deliver stable releases for each of these projects.
 Read more about alpha releases in the [documentation](/guides/sdks/alpha).
 
@@ -53,178 +53,56 @@ bundle add statuscake-rb
   </TabItem>
 </Tabs>
 
-## Create a Client
-
-Once the desired SDK(s) is installed the next step is to create an authenticated
-API client. You can view and manage your API tokens from the [StatusCake account
-panel](https://app.statuscake.com/User.php).
-
-:::warning note
-
-API tokens must be kept private. In the event that one is exposed a new one
-should be generated.
-
-:::
+## Requirements
 
 <Tabs groupId="languages">
   <TabItem value="go" label="Go">
 
-```go title="Create a Client" showLineNumbers
-package main
+The Go SDK supports the three latest major [releases of
+Go](https://go.dev/doc/devel/release). It is a Go module, so importing it is
+enough for the toolchain to fetch it:
 
-import (
-  "github.com/StatusCakeDev/statuscake-go"
-  "github.com/StatusCakeDev/statuscake-go/credentials"
-)
-
-func main() {
-  bearer := credentials.NewBearerWithStaticToken("my-api-token")
-  client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
-}
+```go title="Import the SDK"
+import "github.com/StatusCakeDev/statuscake-go"
 ```
+
+Its only dependencies are in the standard library.
 
   </TabItem>
   <TabItem value="javascript" label="JavaScript (alpha)">
 
-```typescript title="Create a Client" showLineNumbers
-import 'isomorphic-fetch';
-import {
-  Configuration,
-} from '@statuscake/statuscake-js';
-
-const config = new Configuration({
-  headers: {
-    'Authorization': `Bearer ${apiToken}`,
-  },
-});
-```
+See the [statuscake-js](https://github.com/StatusCakeDev/statuscake-js)
+repository for the supported versions of Node.js.
 
   </TabItem>
   <TabItem value="python" label="Python (alpha)">
 
-```python title="Create a Client" showLineNumbers
-from statuscake import ApiClient
-
-client = ApiClient(
-  header_name='Authorization',
-  header_value='Bearer %s' % api_token,
-)
-```
+See the [statuscake-py](https://github.com/StatusCakeDev/statuscake-py)
+repository for the supported versions of Python.
 
   </TabItem>
   <TabItem value="ruby" label="Ruby (alpha)">
 
-```ruby title="Create a Client" showLineNumbers
-require 'statuscake'
-
-client = StatusCake::ApiClient.new
-
-# Constructing these options is a temporary fix until a client wide
-# authentication mechanism has been realised.
-opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
-```
+See the [statuscake-rb](https://github.com/StatusCakeDev/statuscake-rb)
+repository for the supported versions of Ruby.
 
   </TabItem>
 </Tabs>
 
-## List Uptime Checks
+## Pinning a version
 
-With the API client configured you may make requests to the StatusCake API using
-the available methods. In this document we will list all uptime checks for the
-given workspace.
+Add the SDK at a specific version in the same way as any other dependency, and
+upgrade deliberately. Go modules record the version in `go.mod`, which you
+should commit:
 
-<Tabs groupId="languages">
-  <TabItem value="go" label="Go">
-
-```go title="List Uptime Checks" showLineNumbers {4-5,15-20}
-package main
-
-import (
-  "context"
-  "fmt"
-
-  "github.com/StatusCakeDev/statuscake-go"
-  "github.com/StatusCakeDev/statuscake-go/credentials"
-)
-
-func main() {
-  bearer := credentials.NewBearerWithStaticToken("my-api-token")
-  client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
-
-  res, err := client.ListUptimeTests(context.Background()).Execute()
-  if err != nil {
-    panic(err)
-  }
-
-  fmt.Printf("%+v\n", res.Data)
-}
+```bash title="Install a specific version"
+go get github.com/StatusCakeDev/statuscake-go@vX.Y.Z
 ```
 
-  </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+Read the release notes on GitHub before upgrading, particularly for SDKs that
+are still in alpha.
 
-```typescript title="List Uptime Checks" showLineNumbers {4,13-16}
-import 'isomorphic-fetch';
-import {
-  Configuration,
-  UptimeApi,
-} from '@statuscake/statuscake-js';
+## Next Steps
 
-const config = new Configuration({
-  headers: {
-    'Authorization': `Bearer ${apiToken}`,
-  },
-});
-
-const service = new UptimeApi(config);
-service.listUptimeTests()
-  .then((tests) => console.log(JSON.stringify(tests)))
-  .catch(console.log);
-```
-
-  </TabItem>
-  <TabItem value="python" label="Python (alpha)">
-
-```python title="List Uptime Checks" showLineNumbers {2,9-12}
-from statuscake import ApiClient
-from statuscake.apis import UptimeApi
-
-client = ApiClient(
-  header_name='Authorization',
-  header_value='Bearer %s' % api_token,
-)
-
-service = UptimeApi(api_client=client)
-tests = service.list_uptime_tests()
-
-print(tests)
-```
-
-  </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
-
-```ruby title="List Uptime Checks" showLineNumbers {9-12}
-require 'statuscake'
-
-client = StatusCake::ApiClient.new
-
-# Constructing these options is a temporary fix until a client wide
-# authentication mechanism has been realised.
-opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
-
-service = StatusCake::UptimeApi.new(client)
-tests = service.list_uptime_tests(opts)
-
-puts tests
-```
-
-  </TabItem>
-</Tabs>
-
-## Next steps
-
-There are many other methods available within each SDK to manage StatusCake
-monitoring resource that are not covered in this document. See the respective
-SDK GitHub repositories for example usage.
-
-Next learn about configuration options available in the SDKs.
+Learn how to [authenticate](/guides/sdks/authentication) a client so that it can
+make requests.
