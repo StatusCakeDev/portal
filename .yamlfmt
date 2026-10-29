@@ -3,6 +3,7 @@
 exclude:
 - node_modules/
 - src/spec/
+- **/pnpm-lock.yaml
 formatter:
   type: basic
   include_document_start: true
