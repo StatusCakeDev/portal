@@ -7,9 +7,9 @@ description: Overview of the StatusCake API
 The StatusCake API is organised around the features that we offer, with each
 feature providing a set of endpoints to perform operations on resources
 associated with your account. It is the foundation for everything else on this
-portal: the [SDKs](/guides/sdks/introduction), and the [Terraform
-provider](/guides/terraform/introduction) all make requests to it on your
-behalf.
+portal: the [SDKs](/guides/sdks/introduction), the [CLI](/guides/cli/introduction),
+the [Terraform provider](/guides/terraform/introduction), and the
+[MCP server](/guides/mcp/introduction) all make requests to it on your behalf.
 
 If you only need to manage monitoring from a script, a pipeline or a
 configuration repository, one of those tools is usually quicker than calling the

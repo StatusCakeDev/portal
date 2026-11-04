@@ -111,9 +111,10 @@ real code should give up after a number of attempts.
 The cheapest request is the one you do not make. A few habits help:
 
 - Throttle your own requests to a little under 5 per second, rather than relying
-  on the API to turn you away. The [SDKs](/guides/sdks/configuration), and the
-  [Terraform provider](/guides/terraform/configuration) all do this with an
-  `rps` setting, which defaults to `4`.
+  on the API to turn you away. The [SDKs](/guides/sdks/configuration), the
+  [CLI](/guides/cli/configuration), and the [Terraform
+  provider](/guides/terraform/configuration) all do this with an `rps` setting,
+  which defaults to `4`.
 - Retrieve a resource by its identifier when you need one, rather than listing
   and searching.
 - Use a larger page `limit` and narrow time windows. See

@@ -51,8 +51,9 @@ The examples in these guides work with Terraform 1.x and above.
   checks, instead of lingering and alerting about something that no longer
   exists.
 
-If monitoring is created by your own software at runtime, use an
-[SDK](/guides/sdks/introduction).
+If you prefer to make changes directly and immediately, the
+[CLI](/guides/cli/introduction) is a better fit. If monitoring is created by
+your own software at runtime, use an [SDK](/guides/sdks/introduction).
 
 ## What the provider manages
 

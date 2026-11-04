@@ -84,8 +84,9 @@ after the API has processed the request but before you receive the response, a
 retry creates a second resource. Where it matters, list the resources afterwards
 to check whether the first attempt succeeded.
 
-The SDKs, and the Terraform provider can retry for you when the API asks a
-client to slow down. See [SDK request retries](/guides/sdks/configuration).
+The SDKs, the CLI, and the Terraform provider can retry for you when the API
+asks a client to slow down. See [SDK request
+retries](/guides/sdks/configuration).
 
 ## Next Steps
 
