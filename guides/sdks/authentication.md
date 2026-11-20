@@ -38,45 +38,37 @@ func main() {
 ```
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+  <TabItem value="javascript" label="JavaScript">
 
 ```typescript title="Create a Client" showLineNumbers
-import 'isomorphic-fetch';
-import {
-  Configuration,
-} from '@statuscake/statuscake-js';
+import { Client } from '@statuscake/statuscake-js';
 
-const config = new Configuration({
-  headers: {
-    'Authorization': `Bearer ${apiToken}`,
-  },
-});
+const client = new Client({ credentials: apiToken });
 ```
 
+A token is shorthand for `new credentials.Bearer(token)`.
+
   </TabItem>
-  <TabItem value="python" label="Python (alpha)">
+  <TabItem value="python" label="Python">
 
 ```python title="Create a Client" showLineNumbers
-from statuscake import ApiClient
+from statuscake import Client
 
-client = ApiClient(
-  header_name='Authorization',
-  header_value='Bearer %s' % api_token,
-)
+client = Client(api_token)
 ```
 
+A token is shorthand for `credentials.Bearer(token)`.
+
   </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
+  <TabItem value="ruby" label="Ruby">
 
 ```ruby title="Create a Client" showLineNumbers
 require 'statuscake'
 
-client = StatusCake::ApiClient.new
-
-# Constructing these options is a temporary fix until a client wide
-# authentication mechanism has been realised.
-opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
+client = StatusCake::Client.new(api_token)
 ```
+
+A token is shorthand for `StatusCake::Credentials::Bearer.new(token)`.
 
   </TabItem>
 </Tabs>
@@ -91,7 +83,7 @@ so a single variable can serve them all.
 <Tabs groupId="languages">
   <TabItem value="go" label="Go">
 
-```go title="Token from the environment" showLineNumbers {10-13}
+```go title="Token from the environment" showLineNumbers {11-14}
 package main
 
 import (
@@ -113,29 +105,39 @@ func main() {
 ```
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+  <TabItem value="javascript" label="JavaScript">
 
-```typescript title="Token from the environment" showLineNumbers {1-4}
+```typescript title="Token from the environment" showLineNumbers {3-6}
+import { Client } from '@statuscake/statuscake-js';
+
 const apiToken = process.env.STATUSCAKE_API_TOKEN;
 if (!apiToken) {
   throw new Error('STATUSCAKE_API_TOKEN is not set');
 }
+
+const client = new Client({ credentials: apiToken });
 ```
 
   </TabItem>
-  <TabItem value="python" label="Python (alpha)">
+  <TabItem value="python" label="Python">
 
-```python title="Token from the environment" showLineNumbers
+```python title="Token from the environment" showLineNumbers {5}
 import os
 
+from statuscake import Client
+
 api_token = os.environ['STATUSCAKE_API_TOKEN']
+client = Client(api_token)
 ```
 
   </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
+  <TabItem value="ruby" label="Ruby">
 
-```ruby title="Token from the environment" showLineNumbers
+```ruby title="Token from the environment" showLineNumbers {3}
+require 'statuscake'
+
 api_token = ENV.fetch('STATUSCAKE_API_TOKEN')
+client = StatusCake::Client.new(api_token)
 ```
 
   </TabItem>
@@ -144,11 +146,14 @@ api_token = ENV.fetch('STATUSCAKE_API_TOKEN')
 ## Tokens That Change
 
 A static token is fixed when the client is created. A long-running service may
-need to pick up a rotated token without restarting. The Go SDK supports this by
-accepting a function, which is called for every request, in place of a fixed
-value.
+need to pick up a rotated token without restarting. The Go, JavaScript, Python
+and Ruby SDKs support this by accepting a function, which is called for every
+attempt to send a request, in place of a fixed value.
 
-```go title="A token supplied by a function" showLineNumbers {11-13}
+<Tabs groupId="languages">
+  <TabItem value="go" label="Go">
+
+```go title="A token supplied by a function" showLineNumbers {12-14}
 package main
 
 import (
@@ -163,6 +168,7 @@ func main() {
   bearer := credentials.NewBearer(func(*http.Request) string {
     return os.Getenv("STATUSCAKE_API_TOKEN")
   })
+  
   client := statuscake.NewClient(statuscake.WithRequestCredentials(bearer))
   _ = client
 }
@@ -171,6 +177,89 @@ func main() {
 The function is given the request about to be sent, so it can fetch a token
 from a secrets manager or a cache. Keep it fast, since it runs before every
 request.
+
+  </TabItem>
+  <TabItem value="javascript" label="JavaScript">
+
+```typescript title="A token supplied by a function" showLineNumbers {4}
+import { Client } from '@statuscake/statuscake-js';
+
+const client = new Client({
+  credentials: async () => await secrets.get('statuscake-token'),
+});
+```
+
+The function may be asynchronous, so it can fetch a token from a secrets manager
+or a cache. Keep it fast, since it runs before every attempt to send a request.
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python title="A token supplied by a function" showLineNumbers {5}
+import os
+
+from statuscake import Client
+
+client = Client(lambda: os.environ['STATUSCAKE_API_TOKEN'])
+```
+
+The function is called before every attempt to send a request, so it can fetch
+a token from a secrets manager or a cache. Keep it fast.
+
+  </TabItem>
+  <TabItem value="ruby" label="Ruby">
+
+```ruby title="A token supplied by a function" showLineNumbers {3}
+require 'statuscake'
+
+client = StatusCake::Client.new(-> { ENV.fetch('STATUSCAKE_API_TOKEN') })
+```
+
+The function is called before every attempt to send a request, so it can fetch
+a token from a secrets manager or a cache. Keep it fast.
+
+  </TabItem>
+</Tabs>
+
+## Basic Authentication
+
+Accounts that authenticate with a username and password rather than an API token
+can use basic credentials in the Go, JavaScript, Python and Ruby SDKs. Bearer tokens
+are preferred.
+
+<Tabs groupId="languages">
+  <TabItem value="go" label="Go">
+
+```go title="Basic credentials"
+basic := credentials.NewBasicAuthentication("my-username", "my-password")
+client := statuscake.NewClient(statuscake.WithRequestCredentials(basic))
+```
+
+  </TabItem>
+  <TabItem value="javascript" label="JavaScript">
+
+```typescript title="Basic credentials"
+const client = new Client({
+  credentials: new credentials.Basic('my-username', 'my-password'),
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python title="Basic credentials"
+client = Client(credentials.Basic('my-username', 'my-password'))
+```
+
+  </TabItem>
+  <TabItem value="ruby" label="Ruby">
+
+```ruby title="Basic credentials"
+client = StatusCake::Client.new(StatusCake::Credentials::Basic.new('my-username', 'my-password'))
+```
+
+  </TabItem>
+</Tabs>
 
 ## Next Steps
 

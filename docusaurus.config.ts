@@ -54,7 +54,7 @@ const config: Config = {
       },
       {
         title: 'JavaScript',
-        prompt: 'npm install -D statuscake-js',
+        prompt: 'npm install @statuscake/statuscake-js@',
         href: 'https://github.com/StatusCakeDev/statuscake-js',
         image: {
           src: '/img/languages/node.svg',
@@ -72,7 +72,7 @@ const config: Config = {
       },
       {
         title: 'Ruby',
-        prompt: 'bundle add statuscake-rb',
+        prompt: 'gem install statuscake-rb',
         href: 'https://github.com/StatusCakeDev/statuscake-rb',
         image: {
           src: '/img/languages/ruby.svg',

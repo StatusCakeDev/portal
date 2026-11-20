@@ -37,7 +37,6 @@ const sidebars: SidebarsConfig = {
         'sdks/errors',
         'sdks/configuration',
         'sdks/backoff',
-        'sdks/alpha',
       ],
     },
     {
