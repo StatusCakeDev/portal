@@ -21,7 +21,7 @@ given workspace.
 <Tabs groupId="languages">
   <TabItem value="go" label="Go">
 
-```go title="List Uptime Checks" showLineNumbers {4-5,15-20}
+```go title="List Uptime Checks" showLineNumbers
 package main
 
 import (
@@ -46,60 +46,40 @@ func main() {
 ```
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+  <TabItem value="javascript" label="JavaScript">
 
-```typescript title="List Uptime Checks" showLineNumbers {4,13-16}
-import 'isomorphic-fetch';
-import {
-  Configuration,
-  UptimeApi,
-} from '@statuscake/statuscake-js';
+```typescript title="List Uptime Checks" showLineNumbers
+import { Client, credentials } from '@statuscake/statuscake-js';
 
-const config = new Configuration({
-  headers: {
-    'Authorization': `Bearer ${apiToken}`,
-  },
+const client = new Client({
+  credentials: new credentials.Bearer(apiToken),
 });
 
-const service = new UptimeApi(config);
-service.listUptimeTests()
-  .then((tests) => console.log(JSON.stringify(tests)))
-  .catch(console.log);
+const tests = await client.uptime.listUptimeTests();
+console.log(tests.data);
 ```
 
   </TabItem>
-  <TabItem value="python" label="Python (alpha)">
+  <TabItem value="python" label="Python">
 
-```python title="List Uptime Checks" showLineNumbers {2,9-12}
-from statuscake import ApiClient
-from statuscake.apis import UptimeApi
+```python title="List Uptime Checks" showLineNumbers
+from statuscake import Client, credentials
 
-client = ApiClient(
-  header_name='Authorization',
-  header_value='Bearer %s' % api_token,
-)
+client = Client(credentials.Bearer(api_token))
 
-service = UptimeApi(api_client=client)
 tests = service.list_uptime_tests()
-
-print(tests)
+print(tests.data)
 ```
 
   </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
+  <TabItem value="ruby" label="Ruby">
 
-```ruby title="List Uptime Checks" showLineNumbers {9-12}
+```ruby title="List Uptime Checks" showLineNumbers
 require 'statuscake'
 
-client = StatusCake::ApiClient.new
+client = StatusCake::Client.new(api_token)
 
-# Constructing these options is a temporary fix until a client wide
-# authentication mechanism has been realised.
-opts = { header_params: { 'Authorization' => "Bearer #{api_token}" } }
-
-service = StatusCake::UptimeApi.new(client)
-tests = service.list_uptime_tests(opts)
-
+tests = client.uptime.list_uptime_tests
 puts tests
 ```
 
@@ -108,10 +88,16 @@ puts tests
 
 ## Create, Read and Delete a Check
 
-A request is built by chaining the parameters you want onto the call, and sent
-with `Execute`. The remainder of this guide, and those that follow, use Go.
+In Go a request is built by chaining the parameters you want onto the call, and
+sent with `Execute`. In JavaScript the parameters are properties of a single
+object, and in Python they are keyword arguments. In Ruby the required parameters
+are positional and the rest are keyword options. The guides that follow use Go
+unless they say otherwise.
 
-```go title="Create, read and delete an uptime check" showLineNumbers {18-24,30,35}
+<Tabs groupId="languages">
+  <TabItem value="go" label="Go">
+
+```go title="Create, read and delete an uptime check" showLineNumbers {17-25,30,36}
 package main
 
 import (
@@ -155,13 +141,125 @@ func main() {
 
 A few things to notice:
 
-- Every call takes a `context.Context`, which controls cancellation and
-  deadlines.
-- Creating returns the identifier of the new check in `Data.NewID`. Identifiers
-  are strings, and are what you pass to every other call about that check.
-- Updating and deleting return only an error, since the API returns no body.
-- Required parameters are checked before the request is made. Leave one out and
-  `Execute` returns an error without contacting the API.
+    - Every call takes a `context.Context`, which controls cancellation and
+      deadlines.
+    - Creating returns the identifier of the new check in
+      `Data.NewID`. Identifiers are strings, and are what you pass to every
+      other call about that check.
+    - Updating and deleting return only an error, since the API returns no body.
+    - Required parameters are checked before the request is made. Leave one out
+      and `Execute` returns an error without contacting the API.
+
+  </TabItem>
+  <TabItem value="javascript" label="JavaScript">
+
+```typescript title="Create, read and delete an uptime check" showLineNumbers {10-15,20,23}
+import {
+  Client,
+  UptimeTestCheckRate,
+  UptimeTestType,
+  credentials,
+} from '@statuscake/statuscake-js';
+
+const client = new Client({ credentials: new credentials.Bearer(apiToken) });
+
+const created = await client.uptime.createUptimeTest({
+  name: 'statuscake.com',
+  testType: UptimeTestType.Http,
+  websiteUrl: 'https://www.statuscake.com',
+  checkRate: UptimeTestCheckRate.FiveMinutes,
+});
+
+const testId = created.data.newId;
+console.log('created check', testId);
+
+const check = await client.uptime.getUptimeTest({ testId });
+console.log(`${check.data.name} checks ${check.data.websiteUrl} every ${check.data.checkRate} seconds`);
+
+await client.uptime.deleteUptimeTest({ testId });
+```
+
+A few things to notice:
+
+    - Every call returns a promise. Pass `{ signal }` as the second argument to
+      cancel a request with an `AbortSignal`.
+    - Creating returns the identifier of the new check in
+      `data.newId`. Identifiers are strings, and are what you pass to every
+      other call about that check.
+    - Required parameters are checked before the request is made. Leave one out
+      and the call rejects with a `RequiredError` without contacting the API.
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python title="Create, read and delete an uptime check" showLineNumbers {6-11,16,19}
+from statuscake import Client, credentials
+from statuscake.models import UptimeTestCheckRate, UptimeTestType
+
+client = Client(credentials.Bearer(api_token))
+
+created = client.uptime.create_uptime_test(
+    name="statuscake.com",
+    test_type=UptimeTestType.HTTP,
+    website_url="https://www.statuscake.com",
+    check_rate=UptimeTestCheckRate.FiveMinutes,
+)
+
+test_id = created.data.new_id
+print("created check", test_id)
+
+check = client.uptime.get_uptime_test(test_id)
+print(f"{check.data.name} checks {check.data.website_url} every {check.data.check_rate} seconds")
+
+client.uptime.delete_uptime_test(test_id)
+```
+
+A few things to notice:
+
+    - Calls are synchronous. Pass `_request_timeout` to a call, or `timeout` to
+      the client, to limit how long a request may take.
+    - Creating returns the identifier of the new check in
+      `data.new_id`. Identifiers are strings, and are what you pass to every
+      other call about that check.
+    - Requests and responses are validated with pydantic. A missing or invalid
+      parameter raises a `pydantic.ValidationError` before the request is made.
+
+  </TabItem>
+  <TabItem value="ruby" label="Ruby">
+
+```ruby title="Create, read and delete an uptime check" showLineNumbers {5-10,15,18}
+require 'statuscake'
+
+client = StatusCake::Client.new(api_token)
+
+created = client.uptime.create_uptime_test(
+  'statuscake.com',
+  'HTTP',
+  'https://www.statuscake.com',
+  300,
+)
+
+test_id = created.data.new_id
+puts "created check #{test_id}"
+
+check = client.uptime.get_uptime_test(test_id)
+puts "#{check.data.name} checks #{check.data.website_url} every #{check.data.check_rate} seconds"
+
+client.uptime.delete_uptime_test(test_id)
+```
+
+A few things to notice:
+
+    - Calls are synchronous. Set `timeout` on the client to limit how long a
+      request may take.
+    - Creating returns the identifier of the new check in
+      `data.new_id`. Identifiers are strings, and are what you pass to every
+      other call about that check.
+    - Required parameters are positional and the rest are keyword options, for
+      example `regions: %w[london paris]`.
+
+  </TabItem>
+</Tabs>
 
 ## Next Steps
 

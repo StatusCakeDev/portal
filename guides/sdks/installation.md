@@ -14,14 +14,6 @@ guide will prefer the use of a dependency manager unless otherwise stated.
 Use the following steps to install the StatusCake API SDK for the desired
 language:
 
-:::info
-
-Some SDKs are currently in alpha and will not be given support at this time. We
-are currently working to deliver stable releases for each of these projects.
-Read more about alpha releases in the [documentation](/guides/sdks/alpha).
-
-:::
-
 <Tabs groupId="languages">
   <TabItem value="go" label="Go">
 
@@ -30,24 +22,24 @@ go get github.com/StatusCakeDev/statuscake-go
 ```
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+  <TabItem value="javascript" label="JavaScript">
 
 ```bash title="Install statuscake-js"
-npm install -D statuscake-js
+npm install @statuscake/statuscake-js
 ```
 
   </TabItem>
-  <TabItem value="python" label="Python (alpha)">
+  <TabItem value="python" label="Python">
 
 ```bash title="Install statuscake-py"
 pip install statuscake-py
 ```
 
   </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
+  <TabItem value="ruby" label="Ruby">
 
 ```bash title="Install statuscake-rb"
-bundle add statuscake-rb
+gem install statuscake-rb
 ```
 
   </TabItem>
@@ -69,22 +61,40 @@ import "github.com/StatusCakeDev/statuscake-go"
 Its only dependencies are in the standard library.
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript (alpha)">
+  <TabItem value="javascript" label="JavaScript">
 
-See the [statuscake-js](https://github.com/StatusCakeDev/statuscake-js)
-repository for the supported versions of Node.js.
+The JavaScript SDK supports Node.js 20 and later, and modern browsers. It is
+written in TypeScript and includes its type definitions. It is published as both
+an ES module and a CommonJS module, so it can be imported or required:
+
+```javascript title="Import the SDK"
+import { Client } from '@statuscake/statuscake-js';
+// or
+const { Client } = require('@statuscake/statuscake-js');
+```
+
+It has no runtime dependencies and uses the global `fetch`.
 
   </TabItem>
-  <TabItem value="python" label="Python (alpha)">
+  <TabItem value="python" label="Python">
 
-See the [statuscake-py](https://github.com/StatusCakeDev/statuscake-py)
-repository for the supported versions of Python.
+The Python SDK supports Python 3.9 and later. It depends on
+[pydantic](https://docs.pydantic.dev/) 2 to validate and type requests and
+responses, and on [urllib3](https://urllib3.readthedocs.io/) 2.
+
+```python title="Import the SDK"
+from statuscake import Client
+```
 
   </TabItem>
-  <TabItem value="ruby" label="Ruby (alpha)">
+  <TabItem value="ruby" label="Ruby">
 
-See the [statuscake-rb](https://github.com/StatusCakeDev/statuscake-rb)
-repository for the supported versions of Ruby.
+The Ruby SDK supports Ruby 3.2 and later. It has no dependencies other than the
+standard library, and sends requests with `Net::HTTP`.
+
+```ruby title="Require the SDK"
+require 'statuscake'
+```
 
   </TabItem>
 </Tabs>
@@ -99,8 +109,7 @@ should commit:
 go get github.com/StatusCakeDev/statuscake-go@vX.Y.Z
 ```
 
-Read the release notes on GitHub before upgrading, particularly for SDKs that
-are still in alpha.
+Read the release notes on GitHub before upgrading.
 
 ## Next Steps
 

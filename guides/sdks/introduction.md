@@ -17,14 +17,6 @@ At present we support the following languages:
 
 <DocClients />
 
-:::info
-
-Some SDKs are currently in alpha and will not be given support at this time. We
-are currently working to deliver stable releases for each of these projects.
-Read more about alpha releases in the [documentation](/guides/sdks/alpha).
-
-:::
-
 ## What an SDK gives you
 
 - **Typed requests and responses.** Check types, check rates, regions and
@@ -35,6 +27,8 @@ Read more about alpha releases in the [documentation](/guides/sdks/alpha).
 - **Retries and backoff.** When the API says it is being asked too much, the
   client waits and tries again. How many times, and for how long, is
   configurable.
+- **Throttling.** Keep a program that makes many requests inside the API's
+  ratelimit instead of relying on retries.
 - **Structured errors.** A failed request becomes an error that tells you which
   parameters were wrong.
 
@@ -66,14 +60,6 @@ The guides build on each other, and can also be read individually.
 | [Configuration](/guides/sdks/configuration) | Retries, throttling, HTTP clients and debugging. |
 | [Backoff Strategies](/guides/sdks/backoff) | Choosing how long to wait between retries. |
 
-:::caution
-
-The Go SDK is the most complete, and the guides after the Quick Start use it
-for their examples. The other SDKs are in [alpha](/guides/sdks/alpha), so
-consult their repositories for the current state of any feature.
-
-:::
-
-## Next Steps
+:::in## Next Steps
 
 Install the SDK for your language.

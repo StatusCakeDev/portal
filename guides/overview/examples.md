@@ -29,22 +29,7 @@ the platform.
 
 Each tool has its own set of guides, which include worked examples.
 
-- [Getting started with the Go SDK](/guides/sdks/quickstart)
-- [Getting started with the Terraform provider](/guides/terraform/quickstart)
-- [Scripting with the command line](/guides/cli/scripting)
+- [Getting started with the StatusCake SDK](/guides/sdks/quickstart)
+- [Getting started with the StatusCake Terraform provider](/guides/terraform/quickstart)
+- [Scripting with the StatusCake command line](/guides/cli/scripting)
 - [Asking an AI assistant about your monitoring](/guides/mcp/using)
-
-## Community
-
-At StatusCake we have a growing development community. We maintain a curated
-list of interesting projects that may be useful to others.
-
-### Tools
-
-- [ansible-statuscake](https://github.com/labynocle/ansible-statuscake)
-- [statuscake-push-client](https://github.com/vparpoil/status-cake-push-client)
-- [statuscake-exporter](https://github.com/chelnak/status-cake-exporter)
-
-### Guides
-
-Coming soon
